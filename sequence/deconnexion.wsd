@@ -1,4 +1,4 @@
-@startuml Connexion
+@startuml Deconnexion
 actor Employe
 VueApplication [hidden]-> ControleurUtilisateurs
 VueApplication [hidden]-> ControleurUDP
