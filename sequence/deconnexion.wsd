@@ -1,0 +1,40 @@
+@startuml Connexion
+actor Employe
+VueApplication [hidden]-> ControleurUtilisateurs
+VueApplication [hidden]-> ControleurUDP
+VueApplication [hidden]-> ServiceEnvoiUDP
+group Seq [deconnexion locale]
+    VueApplication [hidden]-> ServiceReceptionUDP
+    activate VueApplication
+    activate ServiceReceptionUDP
+    Employe -> VueApplication : deconnexion()
+    VueApplication -> ControleurUtilisateurs : deconnexion()
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> ControleurUDP : deconnexion()
+    activate ControleurUDP
+    ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+    activate ServiceEnvoiUDP
+    ServiceEnvoiUDP --> ControleurUDP
+    deactivate ServiceEnvoiUDP
+    ControleurUDP --> ControleurUtilisateurs
+    deactivate ControleurUDP
+    ControleurUtilisateurs --> VueApplication
+    deactivate ControleurUtilisateurs
+    VueApplication -> VueApplication : fermeture()
+    VueApplication [hidden]-> VueApplication
+    deactivate ServiceReceptionUDP
+    deactivate VueApplication
+end
+group Seq [deconnexion distante]
+    VueApplication [hidden]-> ControleurUtilisateurs
+    activate VueApplication
+    activate ServiceReceptionUDP
+    ServiceReceptionUDP -> ControleurUtilisateurs : deconnexionDistante(utilisateur)
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> ModeleUtilisateurs : deconnexion(utilisateur)
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUtilisateurs
+    deactivate ModeleUtilisateurs
+    deactivate ControleurUtilisateurs
+end
+@enduml
