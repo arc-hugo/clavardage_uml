@@ -3,7 +3,9 @@ actor Employe
 group Seq [connexion locale]
     Employe -> Principal : main()
     activate Principal
-    Principal -> ControleurUtilisateurs : ControleurUtilisateurs()
+    Principal -> VueApplication : start()
+    activate VueApplication 
+    VueApplication -> ControleurUtilisateurs : ControleurUtilisateurs()
     activate ControleurUtilisateurs
     ControleurUtilisateurs -> ControleurUDP : ControleurUDP()
     ControleurUDP -> ServiceReceptionUDP : start()
@@ -15,6 +17,8 @@ group Seq [connexion locale]
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : modele
     deactivate ModeleUtilisateurs
+    ControleurUtilisateurs -> VueUtilisateurs : VueUtilisateurs(modele)
+    activate VueUtilisateurs
     ref over ControleurUtilisateurs
         Saisie de 
         pseudo
