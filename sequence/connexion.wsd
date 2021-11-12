@@ -1,0 +1,32 @@
+@startuml Connexion
+actor Employe
+group Seq [connexion locale]
+    Employe -> Principal : main()
+    activate Principal
+    Principal -> ControleurUtilisateurs : ControleurUtilisateurs()
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> ControleurUDP : ControleurUDP()
+    ControleurUDP -> ServiceReceptionUDP : start()
+    activate ServiceReceptionUDP
+    ControleurUtilisateurs -> ControleurTCP : ControleurTCP()
+    ControleurTCP -> ServiceReceptionTCP : start()
+    activate ServiceReceptionTCP
+    ControleurUtilisateurs -> ModeleUtilisateurs : ModeleUtilisateurs()
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUtilisateurs : modele
+    deactivate ModeleUtilisateurs
+    ref over ControleurUtilisateurs
+        Saisie de 
+        pseudo
+    end ref
+end
+group Seq [connexion distante]
+    ServiceReceptionUDP -> ControleurUDP : receptionUtilisateur(utilisateur)
+    activate ControleurUDP
+    ControleurUDP -> ModeleUtilisateurs : ajout(utilisateur)
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUDP
+    deactivate ModeleUtilisateurs
+    deactivate ControleurUDP
+end
+@enduml
