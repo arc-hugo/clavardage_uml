@@ -12,7 +12,6 @@ VueSession -> ControleurSession : envoiMessage(msg)
 activate ControleurSession
 ControleurSession -> ServiceCommunicationTCP : envoi(paquet)
 ServiceCommunicationTCP --> ControleurSession : reception
-deactivate ControleurTCP
 alt reception = true
     ControleurSession [hidden]-> ControleurSession
     ref over ControleurSession
