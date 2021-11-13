@@ -1,0 +1,14 @@
+@startuml creation_session
+activate ControleurUtilisateurs
+ControleurUtilisateurs -> ControleurSession : ControleurSession(socket, utilisateur)
+activate ControleurSession
+ref over ControleurSession
+    Récupération de
+        l'historique
+end ref
+ControleurSession -> ServiceCommunicationTCP : start(socket)
+activate ServiceCommunicationTCP
+ControleurSession -> VueSession : VueSession(utilisateur, historique)
+deactivate ControleurSession
+activate VueSession
+@enduml
