@@ -1,0 +1,32 @@
+@startuml fermeture_session
+actor Employe
+activate VueSession
+activate ServiceCommunicationTCP
+group Seq [fermeture locale]
+    Employe -> VueSession : fermeture()
+    VueSession -> ControleurSession : fermeture()
+    activate ControleurSession
+    ControleurSession ->  ServiceCommunicationTCP : envoi(paquet)
+    ServiceCommunicationTCP --> ControleurSession : reception
+    deactivate ServiceCommunicationTCP
+    ControleurSession --> VueSession
+    deactivate ControleurSession
+    VueSession -> VueSession : fermetureVue()
+    VueSession [hidden]-> ServiceCommunicationTCP
+    deactivate VueSession
+end
+VueSession [hidden]-> VueSession
+activate ServiceCommunicationTCP
+activate VueSession
+group Seq [fermeture distante]
+    ServiceCommunicationTCP -> ControleurSession : fermetureDistante()
+    deactivate ServiceCommunicationTCP
+    activate ControleurSession
+    ControleurSession -> VueSession : fermetureDistante()
+    deactivate ControleurSession
+    VueSession -> VueSession : notificationFermeture()
+    VueSession -> VueSession : fermetureVue()
+    VueSession [hidden]-> ServiceCommunicationTCP
+    deactivate VueSession
+end
+@enduml
