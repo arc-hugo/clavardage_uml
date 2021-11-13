@@ -1,0 +1,17 @@
+@startuml saisie_pseudo
+actor Employe
+activate ControleurUtilisateurs
+ControleurUtilisateurs -> VueSaisiePseudo : saisiePseudo()
+activate VueSaisiePseudo
+Employe -> VueSaisiePseudo : nouveauPseudo
+VueSaisiePseudo --> ControleurUtilisateurs
+deactivate VueSaisiePseudo
+ControleurUtilisateurs -> ModeleUtilisateurs : setPseudoLocal(nouveauPseudo)
+activate ModeleUtilisateurs
+ModeleUtilisateurs --> ControleurUtilisateurs
+deactivate ModeleUtilisateurs
+ref over ControleurUtilisateurs
+    Validation d'un
+        pseudo
+end ref
+@enduml
