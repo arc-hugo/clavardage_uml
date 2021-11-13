@@ -1,0 +1,24 @@
+@startuml enregistrement_historique 
+activate ControleurSession
+group Seq [enregistrement d'un envoi de message]
+    ref over ControleurSession
+        Envoi d'un
+        message
+    end ref
+    ControleurSession -> ControleurBDD : enregistrementEnvoi(msg, utilisateur)
+end
+group Seq [enregistrement d'une réception de message]
+    ref over ControleurSession
+        Réception d'un
+        message
+    end ref
+    ControleurSession -> ControleurBDD : enregistrementReception(msg, utilisateur)
+end
+ControleurBDD [hidden]-> ControleurSession
+activate ControleurBDD
+ControleurBDD -> BaseDeDonneesLocale : putMessage(msg, utilisateur, proprietaire)
+activate BaseDeDonneesLocale
+BaseDeDonneesLocale --> ControleurBDD
+deactivate BaseDeDonneesLocale
+deactivate ControleurBDD
+@enduml
