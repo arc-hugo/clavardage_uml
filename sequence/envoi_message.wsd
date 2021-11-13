@@ -1,0 +1,29 @@
+@startuml envoi_message
+actor Employe
+activate VueSession
+group Seq [envoi d'un messsage textuel]
+    Employe -> VueSession : ecrireTexte(texte)
+end ref
+group Seq [envoi d'un fichier]
+    Employe -> VueSession : selectionFichier(fichier)
+end ref
+VueSession -> ControleurSession : envoiMessage(msg)
+activate ControleurSession
+ControleurSession -> ControleurTCP : envoiMessage(msg, socket)
+activate ControleurTCP
+ControleurTCP --> ControleurSession : reception
+deactivate ControleurTCP
+alt reception = true
+    ControleurSession [hidden]-> ControleurSession
+    ref over ControleurSession
+        Enregistrement dans
+            l'historique 
+    end ref
+    ControleurSession -> ControleurSession : affichageMessage(msg)
+    ControleurSession --> VueSession
+else reception = false
+    ControleurSession -> ControleurSession : erreurReception(msg)
+    ControleurSession --> VueSession
+end
+deactivate ControleurSession
+@enduml
