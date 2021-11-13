@@ -23,13 +23,12 @@ alt reception = true
     activate ModeleSession
     ModeleSession --> ControleurSession
     deactivate ModeleSession
-    ControleurSession --> VueSession
 else reception = false
     ControleurSession -> ModeleSession : ajoutErreurMessage(msg)
     activate ModeleSession
     ModeleSession --> ControleurSession
     deactivate ModeleSession
-    ControleurSession --> VueSession
 end
+ControleurSession --> VueSession
 deactivate ControleurSession
 @enduml
