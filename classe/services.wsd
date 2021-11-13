@@ -1,0 +1,28 @@
+@startuml services
+package Services {
+    class ServiceReceptionUDP {
+        - ControleurUDP controleur
+        + void start() 
+    }
+    class ServiceReceptionTCP {
+        - ControleurTCP controleur
+        + void start() 
+    }
+    class ServiceCommunicationTCP {
+        - ControleurSession controleur
+        - Socket socket
+        + void start()
+        + boolean envoi(Paquet paquet)
+    }
+    class ServiceEnvoiUDP {
+        - ControleurUDP controleur
+        - Paquet paquet
+        + void start()
+    }
+    class ServiceConnexionTCP {
+        - ControleurTCP controleur
+        - Utilisateur utilisateur
+        + Socket start()
+    }
+}
+@enduml
