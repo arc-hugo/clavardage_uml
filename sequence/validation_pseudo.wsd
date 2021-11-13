@@ -1,0 +1,64 @@
+@startuml validation_pseudo
+actor Employe
+activate ServiceReceptionUDP
+activate VueUtilisateurs
+activate ControleurUtilisateurs
+group seq [envoi pour validation]
+    ControleurUtilisateurs -> ModeleUtilisateurs : getIdentifiantLocal()
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUtilisateurs : identifiantLocal
+    deactivate ModeleUtilisateurs
+    ControleurUtilisateurs -> ControleurUDP : validation(identifiantLocal, nouveauPseudo)
+    activate ControleurUDP
+    ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+    activate ServiceEnvoiUDP
+    ServiceEnvoiUDP --> ControleurUDP
+    deactivate ServiceEnvoiUDP
+    ControleurUDP --> ControleurUtilisateurs
+    deactivate ControleurUDP
+    ControleurUtilisateurs --> VueUtilisateurs
+    deactivate ControleurUtilisateurs
+end
+group seq [reception pseudo choisi invalide]
+    ServiceReceptionUDP -> ControleurUDP : pseudoLocalInvalide()
+    activate ControleurUDP
+    ControleurUDP -> ControleurUtilisateurs : pseudoLocalInvalide()
+    deactivate ControleurUDP
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> VueUtilisateurs : pseudoLocalInvalide()
+    deactivate ControleurUtilisateurs
+    VueUtilisateurs -> VueUtilisateurs : notificationPseudoInvalide()
+    Employe -> VueUtilisateurs : ok
+    ref over VueUtilisateurs
+        Saisie de
+          pseudo
+    end ref
+end
+group seq [reception changement de pseudo]
+    ServiceReceptionUDP -> ControleurUDP : receptionPseudo(identifiant, adresse, pseudo)
+    activate ControleurUDP
+    ControleurUDP -> ControleurUtilisateurs : receptionPseudo(identifiant, adresse, pseudo)
+    activate ControleurUtilisateurs
+    deactivate ControleurUDP
+    ControleurUtilisateurs -> ModeleUtilisateurs : getPseudoLocal()
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUtilisateurs : pseudoLocal
+    deactivate ModeleUtilisateurs
+    alt pseudo != pseudoLocal
+        ControleurUtilisateurs -> ModeleUtilisateurs : changementPseudo(identifiant, pseudo)
+        activate ModeleUtilisateurs
+        ModeleUtilisateurs --> ControleurUtilisateurs
+        deactivate ModeleUtilisateurs
+    else pseudo == pseudoLocal
+        ControleurUtilisateurs -> ControleurUDP : pseudoInvalide(adresse)
+        activate ControleurUDP
+        ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+        activate ServiceEnvoiUDP
+        ServiceEnvoiUDP --> ControleurUDP
+        deactivate ServiceEnvoiUDP
+        ControleurUDP --> ControleurUtilisateurs
+        deactivate ControleurUDP 
+    end
+    deactivate ControleurUtilisateurs
+end
+@enduml
