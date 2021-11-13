@@ -3,14 +3,14 @@ activate ControleurSession
 group seq [enregistrement d'un envoi de message]
     ref over ControleurSession
         Envoi d'un
-        message
+         message
     end ref
     ControleurSession -> ControleurBDD : enregistrementEnvoi(msg, utilisateur)
 end
 group seq [enregistrement d'une réception de message]
     ref over ControleurSession
         Réception d'un
-        message
+            message
     end ref
     ControleurSession -> ControleurBDD : enregistrementReception(msg, utilisateur)
 end
