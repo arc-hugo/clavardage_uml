@@ -1,0 +1,58 @@
+@startuml controleurs
+package "Controleurs" {    
+    class ControleurUtilisateurs {        
+        - ModeleUtilisateurs modele
+        - ControleurUDP udp
+        - ControleurTCP tcp
+        + void sasiePseudo()
+        + void lancementSession(Utilisateur utilisateur)
+        + void demandeSession(Utilisateur utilisateur)
+        + void deconnexion()
+        # void receptionPseudo(UUID identifiant, String adresse, String pseudo)
+        # void deconnexionDistante(UUID identifiant)
+        # void pseudoLocalInvalide()
+        - void fermeture()
+        - void validation(String pseudo)
+        - void messageConnexionRefuse(Utilisateur utilisateur)        
+        - void messageUtilisateurInactif(Utilisateur utilisateur)    
+    }    
+    class ControleurSession {        
+        - ModeleSession modele
+        - ControleurBDD bdd
+        + void fermeture()
+        + void fermetureDistante()
+        + void envoiMessage(Message message)
+        + void receptionMessage(Message message)
+        + void fermeture()
+        + void fermetureDistante()
+        - void erreurReception(Message message)    
+    }    
+    class ControleurUDP {
+        + void deconnexion()
+        + void pseudoLocalInvalide()
+        + void deconnexionDistante(UUID identifiant)
+        + void receptionUtilisateur(UUID identifiant, String adresse, String pseudo)
+        + void receptionPseudo(UUID identifiant, String adresse, String pseudo)
+        # void validation(UUID identifiantLocal, String nouveauPseudo)
+        # void pseudoInvalide(String adresse)
+    }    
+    class ControleurTCP {        
+        + Socket demandeConnexion(Utilisateur destinataire)
+        + void receptionConnexion(Socket socket)
+    }
+    class ControleurBDD {
+        - {static} ControleurBDD instance
+        + {static} ControleurBDD instance()
+        + List<Message> getHistorique(Utilisateur utilisateur)
+        + void enregistrementEnvoi(Message message, Utilisateur utilisateur)        
+        + void enregistrementReception(Message message, Utilisateur utilisateur)
+        - void creationHistorique(Utilisateur utilisateur)
+    }
+
+    ControleurUtilisateurs "1" -- "1" ControleurUDP
+    ControleurUtilisateurs "1" -- "1" ControleurTCP
+    ControleurUtilisateurs "1" -- "*" ControleurSession : crée >
+
+    ControleurSession "*" -- "1" ControleurBDD
+}
+@enduml
