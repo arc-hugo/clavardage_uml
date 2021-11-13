@@ -18,12 +18,12 @@ group Seq [connexion locale]
     ModeleUtilisateurs --> ControleurUtilisateurs : modele
     deactivate ModeleUtilisateurs
     ControleurUtilisateurs -> VueUtilisateurs : VueUtilisateurs(modele)
-    deactivate ControleurUtilisateurs
     activate VueUtilisateurs
     ref over ControleurUtilisateurs
         Saisie de 
         pseudo
     end ref
+    deactivate ControleurUtilisateurs
 end
 group Seq [connexion distante]
     ServiceReceptionUDP -> ControleurUDP : receptionUtilisateur(utilisateur)
