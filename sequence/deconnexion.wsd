@@ -12,7 +12,11 @@ group seq [deconnexion locale]
     activate ControleurUtilisateurs
     ControleurUtilisateurs -> ControleurUDP : deconnexion()
     activate ControleurUDP
-    ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+    ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(udp, paquet)
+    activate ServiceEnvoiUDP
+    ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
+    deactivate ServiceEnvoiUDP
+    ControleurUDP -> ServiceEnvoiUDP : start()
     activate ServiceEnvoiUDP
     ServiceEnvoiUDP --> ControleurUDP
     deactivate ServiceEnvoiUDP

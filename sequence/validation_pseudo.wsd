@@ -10,7 +10,11 @@ group seq [envoi pour validation]
     deactivate ModeleUtilisateurs
     ControleurUtilisateurs -> ControleurUDP : validation(identifiantLocal, nouveauPseudo)
     activate ControleurUDP
-    ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+    ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(paquet)
+    activate ServiceEnvoiUDP
+    ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
+    deactivate ServiceEnvoiUDP
+    ControleurUDP -> ServiceEnvoiUDP : start()
     activate ServiceEnvoiUDP
     ServiceEnvoiUDP --> ControleurUDP
     deactivate ServiceEnvoiUDP
@@ -54,7 +58,11 @@ group seq [changement distant]
     else pseudo == pseudoLocal
         ControleurUtilisateurs -> ControleurUDP : pseudoInvalide(adresse)
         activate ControleurUDP
-        ControleurUDP -> ServiceEnvoiUDP : start(paquet)
+        ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(paquet)
+        activate ServiceEnvoiUDP
+        ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
+        deactivate ServiceEnvoiUDP
+        ControleurUDP -> ServiceEnvoiUDP : start()
         activate ServiceEnvoiUDP
         ServiceEnvoiUDP --> ControleurUDP
         deactivate ServiceEnvoiUDP

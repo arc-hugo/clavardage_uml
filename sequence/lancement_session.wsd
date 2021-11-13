@@ -13,7 +13,11 @@ group seq [lancement local]
     alt actif = true
         ControleurUtilisateurs -> ControleurTCP : demandeConnexion(destinataire)
         activate ControleurTCP
-        ControleurTCP -> ServiceConnexionTCP : start(utilisateur)
+        ControleurTCP -> ServiceConnexionTCP : ServiceConnexionTCP(utilisateur)
+        activate ServiceConnexionTCP
+        ServiceConnexionTCP --> ControleurTCP : serviceConnexion
+        deactivate ServiceConnexionTCP
+        ControleurTCP -> ServiceConnexionTCP : start()
         activate ServiceConnexionTCP
         ServiceConnexionTCP --> ControleurTCP : socket
         deactivate ServiceConnexionTCP
