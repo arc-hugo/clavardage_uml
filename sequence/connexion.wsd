@@ -32,9 +32,13 @@ group seq [connexion locale]
     deactivate ControleurUtilisateurs
 end
 group seq [connexion distante]
-    ServiceReceptionUDP -> ControleurUDP : receptionUtilisateur(utilisateur)
+    ServiceReceptionUDP -> ControleurUDP : receptionUtilisateur(identifiant, adresse, pseudo)
     activate ControleurUDP
-    ControleurUDP -> ModeleUtilisateurs : ajout(utilisateur)
+    ref over ControleurUDP
+        Validation de
+            pseudo
+    end ref
+    ControleurUDP -> ModeleUtilisateurs : connexion(utilisateur)
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUDP
     deactivate ModeleUtilisateurs
