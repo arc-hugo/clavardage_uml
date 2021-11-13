@@ -3,10 +3,10 @@ actor Employe
 activate VueUtilisateurs
 activate ServiceReceptionTCP
 group seq [lancement local]
-    Employe -> VueUtilisateurs : lancementSession(utilisateur)
-    VueUtilisateurs -> ControleurUtilisateurs : lancementSession(utilisateur)
+    Employe -> VueUtilisateurs : lancementSession(identifiant)
+    VueUtilisateurs -> ControleurUtilisateurs : lancementSession(identifiant)
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ModeleUtilisateurs : estActif(utilisateur)
+    ControleurUtilisateurs -> ModeleUtilisateurs : estActif(identifiant)
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : actif
     deactivate ModeleUtilisateurs
