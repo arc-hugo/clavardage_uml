@@ -11,6 +11,10 @@ VueSession -> ControleurSession : envoiMessage(msg)
 activate ControleurSession
 ControleurSession -> ControleurTCP : envoiMessage(msg, socket)
 activate ControleurTCP
+ControleurTCP -> ServiceEnvoiTCP : start(socket, paquet)
+activate ServiceEnvoiTCP
+ServiceEnvoiTCP --> ControleurTCP : reponse
+deactivate ServiceEnvoiTCP
 ControleurTCP --> ControleurSession : reception
 deactivate ControleurTCP
 alt reception = true
