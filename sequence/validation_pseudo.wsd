@@ -34,12 +34,14 @@ group seq [reception pseudo choisi invalide]
           pseudo
     end ref
 end
-group seq [reception changement de pseudo]
-    ServiceReceptionUDP -> ControleurUDP : receptionPseudo(identifiant, adresse, pseudo)
-    activate ControleurUDP
+group seq [changement distant]
+    group seq [utilisateur connecté]
+        ServiceReceptionUDP -> ControleurUDP : receptionPseudo(identifiant, adresse, pseudo)
+        activate ControleurUDP
+    end
     ControleurUDP -> ControleurUtilisateurs : receptionPseudo(identifiant, adresse, pseudo)
-    activate ControleurUtilisateurs
     deactivate ControleurUDP
+    activate ControleurUtilisateurs
     ControleurUtilisateurs -> ModeleUtilisateurs : getPseudoLocal()
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : pseudoLocal
