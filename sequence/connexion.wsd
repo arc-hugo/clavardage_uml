@@ -9,12 +9,20 @@ group seq [connexion locale]
     activate ControleurUtilisateurs
     ControleurUtilisateurs -> ControleurUDP : ControleurUDP(udp)
     activate ControleurUDP
+    ControleurUDP -> ServiceReceptionUDP : ServiceReceptionUDP(udp)
+    activate ServiceReceptionUDP
+    ServiceReceptionUDP --> ControleurUDP : serviceUDP
+    deactivate ServiceReceptionUDP
     ControleurUDP -> ServiceReceptionUDP : start()
     activate ServiceReceptionUDP
     ControleurUDP --> ControleurUtilisateurs : udp
     deactivate ControleurUDP
     ControleurUtilisateurs -> ControleurTCP : ControleurTCP(tcp)
     activate ControleurTCP
+    ControleurTCP -> ServiceReceptionTCP : ServiceReceptionTCP(tcp)
+    activate ServiceReceptionTCP
+    ServiceReceptionTCP --> ControleurTCP : serviceTCP
+    deactivate ServiceReceptionTCP
     ControleurTCP -> ServiceReceptionTCP : start()
     activate ServiceReceptionTCP
     ControleurTCP --> ControleurUtilisateurs : tcp
