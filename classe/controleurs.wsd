@@ -5,7 +5,7 @@ package "Controleurs" {
         - ControleurUDP udp
         - ControleurTCP tcp
         + void sasiePseudo()
-        + void lancementSession(Utilisateur utilisateur)
+        + void lancementSession(UUID identifiant)
         + void demandeSession(Utilisateur utilisateur)
         + void deconnexion()
         # void receptionPseudo(UUID identifiant, String adresse, String pseudo)
