@@ -16,6 +16,7 @@ group Seq [enregistrement d'une réception de message]
 end
 ControleurBDD [hidden]-> ControleurSession
 activate ControleurBDD
+database BaseDeDonneesLocale
 ControleurBDD -> BaseDeDonneesLocale : putMessage(msg, utilisateur, proprietaire)
 activate BaseDeDonneesLocale
 BaseDeDonneesLocale --> ControleurBDD
