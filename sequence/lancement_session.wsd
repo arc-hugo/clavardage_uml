@@ -1,0 +1,59 @@
+@startuml lancement_session
+actor Employe
+activate VueUtilisateurs
+activate ServiceReceptionTCP
+group seq [lancement local]
+    Employe -> VueUtilisateurs : lancementSession(utilisateur)
+    VueUtilisateurs -> ControleurUtilisateurs : lancementSession(utilisateur)
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> ModeleUtilisateurs : estActif(utilisateur)
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurUtilisateurs : actif
+    deactivate ModeleUtilisateurs
+    alt actif = true
+        ControleurUtilisateurs -> ControleurTCP : demandeConnexion(utilisateur)
+        activate ControleurTCP
+        ControleurTCP -> ServiceConnexionTCP : start(utilisateur)
+        activate ServiceConnexionTCP
+        ServiceConnexionTCP --> ControleurTCP : socket
+        deactivate ServiceConnexionTCP
+        ControleurTCP --> ControleurUtilisateurs : connexion, socket
+        deactivate ControleurTCP
+        alt connexion = true
+            ref over ControleurUtilisateurs
+                Création de
+                    session
+            end ref
+        else connexion = false
+            ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse()
+            ControleurUtilisateurs --> VueUtilisateurs
+        end
+    else actif = false
+        ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse()
+        ControleurUtilisateurs --> VueUtilisateurs
+        deactivate ControleurUtilisateurs
+    end
+end
+group seq [lancement distante]
+    ServiceReceptionTCP -> ControleurTCP : receptionConnexion(socket)
+    activate ControleurTCP
+    ControleurTCP -> ModeleUtilisateurs : getUtilisateurWithAdresse(adresse)
+    activate ModeleUtilisateurs
+    ModeleUtilisateurs --> ControleurTCP : utilisateur
+    deactivate ModeleUtilisateurs
+    ControleurTCP -> ControleurUtilisateurs : demandeSession(utilisateur, socket)
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> VueUtilisateurs : notificationSession(utilisateur)
+    Employe -> VueUtilisateurs : accepter
+    VueUtilisateurs --> ControleurUtilisateurs : accepter
+    alt accepter = true
+        ref over ControleurUtilisateurs
+            Création de
+                session
+        end ref
+    end
+    ControleurUtilisateurs --> ControleurTCP
+    deactivate ControleurUtilisateurs
+    deactivate ControleurTCP
+end
+@enduml
