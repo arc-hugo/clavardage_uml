@@ -3,7 +3,7 @@ package "Vues" {
     class VueUtilisateurs { 
         - ModeleUtilisateurs modele        
         - ControleurUtilisateurs controleur
-        + void lancementSession(Utilisateur utilisateur)
+        + void lancementSession(UUID identifiant)
         + void notificationSession(Utilisateur utilisateur)
         + void pseudoLocalInvalide()
         - void notificationPseudoInvalide()
