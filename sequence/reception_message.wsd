@@ -7,7 +7,7 @@ ref over ControleurSession
     Enregistrement dans
           l'historique
 end ref
-ControleurSession -> ModeleSession : ajoutMessage(msg, utilisateur)
+ControleurSession -> ModeleSession : ajoutMessageRecu(msg, utilisateur)
 activate ModeleSession
 ModeleSession --> ControleurSession
 deactivate ModeleSession
