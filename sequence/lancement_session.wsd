@@ -25,11 +25,11 @@ group seq [lancement local]
                     session
             end ref
         else connexion = false
-            ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse()
+            ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse(utilisateur)
             ControleurUtilisateurs --> VueUtilisateurs
         end
     else actif = false
-        ControleurUtilisateurs -> ControleurUtilisateurs : messageUtilisateurInactif()
+        ControleurUtilisateurs -> ControleurUtilisateurs : messageUtilisateurInactif(utilisateur)
         ControleurUtilisateurs --> VueUtilisateurs
         deactivate ControleurUtilisateurs
     end
