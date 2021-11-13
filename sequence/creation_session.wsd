@@ -8,7 +8,11 @@ ref over ControleurSession
 end ref
 ControleurSession -> ServiceCommunicationTCP : start(socket)
 activate ServiceCommunicationTCP
-ControleurSession -> VueSession : VueSession(utilisateur, historique)
+ControleurSession -> ModeleSession : ModeleSession(utilisateur, historique)
+activate ModeleSession
+ModeleSession --> ControleurSession : modele
+deactivate ModeleSession
+ControleurSession -> VueSession : VueSession(controleur, modele)
 deactivate ControleurSession
 activate VueSession
 @enduml

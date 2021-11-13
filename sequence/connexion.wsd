@@ -17,7 +17,7 @@ group seq [connexion locale]
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : modele
     deactivate ModeleUtilisateurs
-    ControleurUtilisateurs -> VueUtilisateurs : VueUtilisateurs(modele)
+    ControleurUtilisateurs -> VueUtilisateurs : VueUtilisateurs(controleur, modele)
     activate VueUtilisateurs
     ref over ControleurUtilisateurs
         Saisie de 
