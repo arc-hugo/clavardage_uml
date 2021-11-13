@@ -2,7 +2,7 @@
 actor Employe
 activate VueSession
 activate ServiceCommunicationTCP
-group Seq [fermeture locale]
+group seq [fermeture locale]
     Employe -> VueSession : fermeture()
     VueSession -> ControleurSession : fermeture()
     activate ControleurSession
@@ -18,7 +18,7 @@ end
 VueSession [hidden]-> VueSession
 activate ServiceCommunicationTCP
 activate VueSession
-group Seq [fermeture distante]
+group seq [fermeture distante]
     ServiceCommunicationTCP -> ControleurSession : fermetureDistante()
     deactivate ServiceCommunicationTCP
     activate ControleurSession

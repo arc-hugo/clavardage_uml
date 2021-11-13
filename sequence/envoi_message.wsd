@@ -2,10 +2,10 @@
 actor Employe
 activate VueSession
 activate ServiceCommunicationTCP
-group Seq [envoi d'un messsage textuel]
+group seq [envoi d'un messsage textuel]
     Employe -> VueSession : ecrireTexte(texte)
 end
-group Seq [envoi d'un fichier]
+group seq [envoi d'un fichier]
     Employe -> VueSession : selectionFichier(fichier)
 end
 VueSession -> ControleurSession : envoiMessage(msg)

@@ -1,13 +1,13 @@
 @startuml enregistrement_historique 
 activate ControleurSession
-group Seq [enregistrement d'un envoi de message]
+group seq [enregistrement d'un envoi de message]
     ref over ControleurSession
         Envoi d'un
         message
     end ref
     ControleurSession -> ControleurBDD : enregistrementEnvoi(msg, utilisateur)
 end
-group Seq [enregistrement d'une réception de message]
+group seq [enregistrement d'une réception de message]
     ref over ControleurSession
         Réception d'un
         message

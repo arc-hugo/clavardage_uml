@@ -3,7 +3,7 @@ actor Employe
 VueApplication [hidden]-> ControleurUtilisateurs
 VueApplication [hidden]-> ControleurUDP
 VueApplication [hidden]-> ServiceEnvoiUDP
-group Seq [deconnexion locale]
+group seq [deconnexion locale]
     VueApplication [hidden]-> ServiceReceptionUDP
     activate VueApplication
     activate ServiceReceptionUDP
@@ -25,7 +25,7 @@ group Seq [deconnexion locale]
     deactivate ServiceReceptionUDP
     deactivate VueApplication
 end
-group Seq [deconnexion distante]
+group seq [deconnexion distante]
     VueApplication [hidden]-> ControleurUtilisateurs
     activate VueApplication
     activate ServiceReceptionUDP
