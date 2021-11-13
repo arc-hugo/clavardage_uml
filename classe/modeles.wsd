@@ -1,0 +1,71 @@
+@startuml modeles
+package "Modeles" {    
+    class ModeleUtilisateurs {        
+        - Utilisateur utilisateurLocal        
+        - List<Utilisateur> utilisateurs        
+        + Utilisateur getUtilisateurLocal()
+        + String getPseudoLocal()
+        + void connexion(Utilisateur utilisateur)
+        + void deconnexion(UUID identifiant)
+        + void changementPseudo(UUID identifiant, String pseudo)
+        + boolean estActif(UUID identifiant)
+        + Utilisateur getUtilisateurWithAdresse(String adresse)
+    }    
+    class ModeleSession {        
+        - Socket socket        
+        - Utilisateur destinataire        
+        - List<Message> messages
+        + void ajoutMessage(Message message)
+        + void ajoutMessageRecu(Message message)
+        + void ajoutErreurMessage(Message message)
+    }    
+    class Utilisateur {        
+        - UUID identifiant
+        - String adresse
+        - String pseudo        
+        - boolean actif        
+        + String getPseudo()        
+        + void setPseudo(String pseudo)        
+        + UUID getIdentifiant()        
+        + boolean isActif()        
+        + void setActif(boolean actif)    
+    }    
+    abstract class Message {        
+        - Date date        
+        - UUID auteur        
+        + Date getDate()        
+        + UUID getAuteurId()        
+        + Object getContent()    
+    }    
+    class Texte {        
+        - String texte        
+        + String getContent()    
+    }   
+    class Fichier {        
+        - File fichier        
+        + File getContent()    
+    }    
+    class Image {        
+        - Image image        
+        + Image getContent()    
+    }    
+    class Notification {        
+        - int Type        
+        + int getType()   
+    }    
+    abstract class Requete {     }
+    class RequeteUni    
+    class RequeteBroadcast     
+    
+    Texte -up-|> Message    
+    Image -up-|> Message    
+    Fichier -up-|> Message    
+    Notification -up-|> Texte     
+    
+    RequeteUni -up-|> Requete    
+    RequeteBroadcast -up-|> Requete     
+    
+    ModeleSession "1" -down-> "*" Message : contient >     
+    ModeleUtilisateurs "1" --> "*" Utilisateur : liste > 
+}
+@enduml
