@@ -10,12 +10,16 @@ ref over ControleurSession
     Récupération de
         l'historique
 end ref
-ControleurSession -> ServiceCommunicationTCP : start(socket)
+ControleurSession -> ServiceCommunicationTCP : ServiceCommunicationTCP(socket)
 activate ServiceCommunicationTCP
+ServiceCommunicationTCP --> ControleurSession : service
+deactivate ServiceCommunicationTCP
 ControleurSession -> ModeleSession : ModeleSession(utilisateur, historique)
 activate ModeleSession
 ModeleSession --> ControleurSession : modele
 deactivate ModeleSession
+ControleurSession -> ServiceCommunicationTCP : start()
+activate ServiceCommunicationTCP
 ControleurSession -> VueSession : VueSession(controleur, modele)
 deactivate ControleurSession
 activate VueSession
