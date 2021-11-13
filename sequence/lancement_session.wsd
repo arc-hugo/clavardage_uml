@@ -29,7 +29,7 @@ group seq [lancement local]
             ControleurUtilisateurs --> VueUtilisateurs
         end
     else actif = false
-        ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse()
+        ControleurUtilisateurs -> ControleurUtilisateurs : messageUtilisateurInactif()
         ControleurUtilisateurs --> VueUtilisateurs
         deactivate ControleurUtilisateurs
     end
