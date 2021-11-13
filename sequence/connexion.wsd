@@ -7,13 +7,13 @@ group seq [connexion locale]
     activate VueApplication 
     VueApplication -> ControleurUtilisateurs : ControleurUtilisateurs()
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ControleurUDP : ControleurUDP()
+    ControleurUtilisateurs -> ControleurUDP : ControleurUDP(udp)
     activate ControleurUDP
     ControleurUDP -> ServiceReceptionUDP : start()
     activate ServiceReceptionUDP
     ControleurUDP --> ControleurUtilisateurs : udp
     deactivate ControleurUDP
-    ControleurUtilisateurs -> ControleurTCP : ControleurTCP()
+    ControleurUtilisateurs -> ControleurTCP : ControleurTCP(tcp)
     activate ControleurTCP
     ControleurTCP -> ServiceReceptionTCP : start()
     activate ServiceReceptionTCP

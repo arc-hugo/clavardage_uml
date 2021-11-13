@@ -10,7 +10,7 @@ ref over ControleurSession
     Récupération de
         l'historique
 end ref
-ControleurSession -> ServiceCommunicationTCP : ServiceCommunicationTCP(socket)
+ControleurSession -> ServiceCommunicationTCP : ServiceCommunicationTCP(controleur, socket)
 activate ServiceCommunicationTCP
 ServiceCommunicationTCP --> ControleurSession : service
 deactivate ServiceCommunicationTCP
