@@ -2,6 +2,10 @@
 activate ControleurUtilisateurs
 ControleurUtilisateurs -> ControleurSession : ControleurSession(socket, utilisateur)
 activate ControleurSession
+ControleurSession -> ControleurBDD : instance()
+activate ControleurBDD
+ControleurBDD --> ControleurSession : bdd
+deactivate
 ref over ControleurSession
     Récupération de
         l'historique
