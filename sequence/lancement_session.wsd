@@ -11,7 +11,7 @@ group seq [lancement local]
     ModeleUtilisateurs --> ControleurUtilisateurs : actif
     deactivate ModeleUtilisateurs
     alt actif = true
-        ControleurUtilisateurs -> ControleurTCP : demandeConnexion(utilisateur)
+        ControleurUtilisateurs -> ControleurTCP : demandeConnexion(destinataire)
         activate ControleurTCP
         ControleurTCP -> ServiceConnexionTCP : start(utilisateur)
         activate ServiceConnexionTCP
