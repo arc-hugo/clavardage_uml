@@ -29,12 +29,16 @@ group seq [deconnexion distante]
     VueApplication [hidden]-> ControleurUtilisateurs
     activate VueApplication
     activate ServiceReceptionUDP
-    ServiceReceptionUDP -> ControleurUtilisateurs : deconnexionDistante(utilisateur)
+    ServiceReceptionUDP -> ControleurUDP : deconnexionDistante(identifiant)
+    activate ControleurUDP
+    ControleurUDP -> ControleurUtilisateurs : deconnexionDistante(identifiant)
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ModeleUtilisateurs : deconnexion(utilisateur)
+    ControleurUtilisateurs -> ModeleUtilisateurs : deconnexion(identifiant)
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs
     deactivate ModeleUtilisateurs
+    ControleurUtilisateurs --> ControleurUDP
     deactivate ControleurUtilisateurs
+    deactivate ControleurUDP
 end
 @enduml
