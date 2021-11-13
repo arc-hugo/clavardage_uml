@@ -1,0 +1,33 @@
+@startuml vues
+package "Vues" {   
+    class VueUtilisateurs { 
+        - ModeleUtilisateurs modele        
+        - ControleurUtilisateurs controleur
+        + void lancementSession(Utilisateur utilisateur)
+        + void notificationSession(Utilisateur utilisateur)
+        + void pseudoLocalInvalide()
+        - void notificationPseudoInvalide()
+     }    
+     class VueSession {      
+        - ModeleSession modele        
+        - ControleurSession controleur
+        + void fermeture()        
+        + void fermetureDistante()
+        + void ecrireTexte(String texte)        
+        + void selectionFichier(File fichier)   
+        - void fermetureVue()
+        - void notificationFermeture()
+    }    
+    class VueSaisiePseudo {
+        + String saisiePseudo()
+    } 
+    class VueApplication {     
+        + void start()
+        + void deconnexion()
+    }    
+    
+    VueApplication "1" *-- "1"  VueUtilisateurs
+    VueApplication "1" *-- "*"  VueSession   
+     VueApplication "1" *-- "0..1" VueSaisiePseudo 
+}
+@enduml
