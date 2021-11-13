@@ -1,0 +1,15 @@
+@startuml reception_message
+activate VueSession
+activate ServiceCommunicationTCP
+ServiceCommunicationTCP -> ControleurSession : receptionMessage(msg)
+activate ControleurSession
+ref over ControleurSession
+    Enregistrement dans
+          l'historique
+end ref
+ControleurSession -> ModeleSession : ajoutMessage(msg, utilisateur)
+activate ModeleSession
+ModeleSession --> ControleurSession
+deactivate ModeleSession
+deactivate ControleurSession
+@enduml
