@@ -25,6 +25,7 @@ group seq [fermeture distante]
     ControleurSession -> VueSession : fermetureDistante()
     deactivate ControleurSession
     VueSession -> VueSession : notificationFermeture()
+    Employe -> VueSession : ok
     VueSession -> VueSession : fermetureVue()
     VueSession [hidden]-> ServiceCommunicationTCP
     deactivate VueSession
