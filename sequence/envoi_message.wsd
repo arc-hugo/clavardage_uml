@@ -1,21 +1,17 @@
 @startuml envoi_message
 actor Employe
 activate VueSession
+activate ServiceCommunicationTCP
 group Seq [envoi d'un messsage textuel]
     Employe -> VueSession : ecrireTexte(texte)
-end ref
+end
 group Seq [envoi d'un fichier]
     Employe -> VueSession : selectionFichier(fichier)
-end ref
+end
 VueSession -> ControleurSession : envoiMessage(msg)
 activate ControleurSession
-ControleurSession -> ControleurTCP : envoiMessage(msg, socket)
-activate ControleurTCP
-ControleurTCP -> ServiceEnvoiTCP : start(socket, paquet)
-activate ServiceEnvoiTCP
-ServiceEnvoiTCP --> ControleurTCP : reponse
-deactivate ServiceEnvoiTCP
-ControleurTCP --> ControleurSession : reception
+ControleurSession -> ServiceCommunicationTCP : envoi(paquet)
+ServiceCommunicationTCP --> ControleurSession : reception
 deactivate ControleurTCP
 alt reception = true
     ControleurSession [hidden]-> ControleurSession
@@ -23,10 +19,16 @@ alt reception = true
         Enregistrement dans
             l'historique 
     end ref
-    ControleurSession -> ControleurSession : affichageMessage(msg)
+    ControleurSession -> ModeleSession : ajoutMessage(msg)
+    activate ModeleSession
+    ModeleSession --> ControleurSession
+    deactivate ModeleSession
     ControleurSession --> VueSession
 else reception = false
-    ControleurSession -> ControleurSession : erreurReception(msg)
+    ControleurSession -> ModeleSession : ajoutErreurMessage(msg)
+    activate ModeleSession
+    ModeleSession --> ControleurSession
+    deactivate ModeleSession
     ControleurSession --> VueSession
 end
 deactivate ControleurSession
