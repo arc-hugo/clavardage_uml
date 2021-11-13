@@ -1,0 +1,18 @@
+@startuml recuperation_historique
+activate ControleurSession
+ControleurSession -> ControleurBDD : getHistorique(utilisateur)
+activate ControleurBDD
+database BaseDeDonneesLocale
+ControleurBDD -> BaseDeDonneesLocale : getHistorique(utilisateur)
+activate BaseDeDonneesLocale
+BaseDeDonneesLocale --> ControleurBDD : historique
+deactivate BaseDeDonneesLocale
+alt historique = null
+    ControleurBDD -> BaseDeDonneesLocale : creationHistorique(utilisateur)
+    activate BaseDeDonneesLocale
+    BaseDeDonneesLocale --> ControleurBDD
+    deactivate BaseDeDonneesLocale
+end
+ControleurBDD --> ControleurSession : historique
+deactivate ControleurBDD
+@enduml
