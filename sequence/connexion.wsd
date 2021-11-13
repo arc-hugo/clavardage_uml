@@ -8,11 +8,17 @@ group seq [connexion locale]
     VueApplication -> ControleurUtilisateurs : ControleurUtilisateurs()
     activate ControleurUtilisateurs
     ControleurUtilisateurs -> ControleurUDP : ControleurUDP()
+    activate ControleurUDP
     ControleurUDP -> ServiceReceptionUDP : start()
     activate ServiceReceptionUDP
+    ControleurUDP --> ControleurUtilisateurs : udp
+    deactivate ControleurUDP
     ControleurUtilisateurs -> ControleurTCP : ControleurTCP()
+    activate ControleurTCP
     ControleurTCP -> ServiceReceptionTCP : start()
     activate ServiceReceptionTCP
+    ControleurTCP --> ControleurUtilisateurs : tcp
+    deactivate ControleurTCP
     ControleurUtilisateurs -> ModeleUtilisateurs : ModeleUtilisateurs()
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : modele
