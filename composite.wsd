@@ -1,0 +1,74 @@
+@startuml composite
+sprite $clavardage [16x16/16] {
+FFFFFFFFFFFFFFFF
+FFF000000000FFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFF0FFFFF
+FFFFFFFFFF00FFFF
+FF00000000000FFF
+FF000000000000FF
+FF00000000000FFF
+FFFFFFFFFF00FFFF
+FFFFFFFFFF0FFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+FFFFFFFFFFFFFFFF
+}
+
+rectangle "Application de clavardage" <<$clavardage>> {
+    component VueApplication
+    component VueUtilisateurs
+    component VueSession
+    component VuePseudo
+    
+    component ControleurUtilisateurs
+    component ControleurSession
+    component ControleurUDP
+    component ControleurTCP
+    component ControleurBDD
+
+    component ServiceReceptionUDP
+    component ServiceReceptionTCP
+    component ServiceCommunicationTCP
+    component ServiceEnvoiUDP
+    component ServiceConnexionTCP
+
+    VueApplication --> VueUtilisateurs
+    VueApplication --> VueSession
+
+    VueUtilisateurs <--> ControleurUtilisateurs
+    VuePseudo <--> ControleurUtilisateurs
+    VueSession <--> ControleurSession
+
+    ControleurUtilisateurs <--> ControleurTCP
+    ControleurUtilisateurs <--> ControleurUDP
+
+    ControleurSession --> ControleurBDD
+    ControleurSession <--> ServiceCommunicationTCP
+
+    ControleurUDP <-- ServiceReceptionUDP
+    ControleurUDP --> ServiceEnvoiUDP
+    ControleurTCP <-- ServiceReceptionTCP
+    ControleurTCP --> ServiceConnexionTCP
+}
+cloud "Reseau local" as net
+database "Base de donnees" as bdd
+actor Employe
+
+ControleurBDD --> bdd
+
+ServiceReceptionTCP <-- net
+ServiceReceptionUDP <-- net
+ServiceEnvoiUDP --> net
+ServiceConnexionTCP --> net
+ServiceCommunicationTCP <--> net
+
+VueApplication <-u- Employe
+VuePseudo <-u- Employe
+VueSession <-u-> Employe
+VueUtilisateurs <-u-> Employe
+
+@enduml
