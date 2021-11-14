@@ -54,9 +54,9 @@ rectangle "Application de clavardage" <<$clavardage>> {
     ControleurTCP <-- ServiceReceptionTCP
     ControleurTCP --> ServiceConnexionTCP
 }
-cloud "Reseau local" as net
-database "Base de donnees" as bdd
-actor Employe
+cloud "Réseau local" as net
+database "Base de données" as bdd
+actor "Employé"as emp
 
 ControleurBDD --> bdd
 
@@ -66,9 +66,9 @@ ServiceEnvoiUDP --> net
 ServiceConnexionTCP --> net
 ServiceCommunicationTCP <--> net
 
-VueApplication <-u- Employe
-VuePseudo <-u- Employe
-VueSession <-u-> Employe
-VueUtilisateurs <-u-> Employe
+VueApplication <-u- emp
+VuePseudo <-u- emp
+VueSession <-u-> emp
+VueUtilisateurs <-u-> emp
 
 @enduml
