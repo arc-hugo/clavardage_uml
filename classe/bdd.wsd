@@ -1,0 +1,16 @@
+@startuml bdd
+!define table(x) class x << (T,#FFAAAA) >>
+hide methods
+hide stereotypes
+table(Historique) {
+    {static} id : UUID
+}
+table(Message) {
+    {static} id: int
+    contenu : string
+    date : date
+    fichier : boolean
+    proprietaire : boolean
+}
+Historique "1" -- "*" Message
+@enduml
