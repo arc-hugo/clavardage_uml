@@ -1,0 +1,45 @@
+@startuml cas_utilisation
+left to right direction
+actor "Système" as sys
+actor "Base de données locale" as bdd
+actor "Employé" as emp
+rectangle "Application de clavardage" {
+    (Déconnexion) as (deco)
+    (Interruption d'une session) as (inter)
+    (Validation d'un pseudo) as (val)
+    (Saisie de pseudo) as (saisie)
+    (Connexion) as (conn)
+    (Envoi de messages) as (envoi)
+    (Réception de messages) as (rece)
+    (Lancement d'une session) as (lance)
+    (Enregistrement dans l'historique) as (enre)
+    (Récupération de l'historique) as (recup)
+
+    sys -- deco
+    sys -- inter
+    sys -- val
+    sys -- saisie
+    sys -- conn
+    sys -- envoi
+    sys -- rece
+    sys -- lance
+
+    bdd -- enre
+    bdd -- recup
+
+    deco -- emp
+    inter -- emp
+    saisie -- emp
+    conn -- emp
+    envoi -- emp
+    rece -- emp
+    lance -- emp
+
+    conn .> saisie : <<include>>
+    saisie .> val : <<include>>
+    envoi .> enre : <<include>>
+    rece .> enre : <<include>>
+    lance .> recup : <<include>>
+}
+
+@enduml
