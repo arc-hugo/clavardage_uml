@@ -20,14 +20,15 @@ package "Vues" {
     }    
     class VueSaisiePseudo {
         + String saisiePseudo()
-    } 
-    class VueApplication {     
+    }
+    class VueApplication {
+        - VueUtilisateurs vueU
+        - List<VueSession> vuesS
         + void start()
         + void deconnexion()
     }    
     
     VueApplication "1" *-- "1"  VueUtilisateurs
     VueApplication "1" *-- "*"  VueSession   
-     VueApplication "1" *-- "0..1" VueSaisiePseudo 
 }
 @enduml
