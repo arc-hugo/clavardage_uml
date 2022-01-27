@@ -1,25 +1,23 @@
-@startuml enregistrement_historique 
-activate ControleurSession
-group seq [enregistrement d'un envoi de message]
-    ref over ControleurSession
+@startuml enregistrement_historique
+activate ModeleSession
+note right of AccesDB
+msg : MessageAffiche
+end note
+    ref over ModeleSession
         Envoi d'un
          message
     end ref
-    ControleurSession -> ControleurBDD : enregistrementEnvoi(msg, utilisateur)
-end
-group seq [enregistrement d'une réception de message]
-    ref over ControleurSession
+    ref over ModeleSession
         Réception d'un
             message
     end ref
-    ControleurSession -> ControleurBDD : enregistrementReception(msg, utilisateur)
-end
-ControleurBDD [hidden]-> ControleurSession
-activate ControleurBDD
-database BaseDeDonneesLocale
-ControleurBDD -> BaseDeDonneesLocale : putMessage(msg, utilisateur, proprietaire)
-activate BaseDeDonneesLocale
-BaseDeDonneesLocale --> ControleurBDD
-deactivate BaseDeDonneesLocale
-deactivate ControleurBDD
+ModeleSession -> AccesDB : ajoutMessage(msg)
+activate AccesDB
+database SQLite
+AccesDB -> SQLite : INSERT INTO ...
+activate SQLite
+SQLite --> AccesDB
+deactivate SQLite
+AccesDB --> ModeleSession
+deactivate AccesDB
 @enduml

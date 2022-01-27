@@ -1,26 +1,58 @@
 @startuml creation_session
 activate ControleurUtilisateurs
-ControleurUtilisateurs -> ControleurSession : ControleurSession(socket, utilisateur)
+group seq [historique]
+ControleurUtilisateurs -> ControleurSession : ControleurSession(local, destinataire)
+note right of ControleurUtilisateurs
+local : Utilisateur
+destinataire : Utilisateur
+end note
 activate ControleurSession
-ControleurSession -> ControleurBDD : instance()
-activate ControleurBDD
-ControleurBDD --> ControleurSession : bdd
-deactivate
+ControleurSession -> ModeleSession : ModeleSession(local, destinataire)
+activate ModeleSession
+ModeleSession -> AccesDB : AccesDB(uuidLocal, uuidDestinataire)
+note right of AccesDB
+uuidLocal : UUID
+uuidDestinataire : UUID
+accesdb : AccesDB
+end note
+activate AccesDB
+AccesDB --> ModeleSession : accesdb
+deactivate AccesDB
+ModeleSession --> ControleurSession : modele
+deactivate ModeleSession
 ref over ControleurSession
     Récupération de
         l'historique
 end ref
-ControleurSession -> ServiceCommunicationTCP : ServiceCommunicationTCP(controleur, socket)
+end seq
+deactivate ControleurSession
+group seq [discussion]
+ControleurUtilisateurs -> ControleurSession : ControleurSession(local, destinataire, socket)
+note right of ControleurUtilisateurs
+socket : Socket
+end note
+activate ControleurSession
+ControleurSession -> ModeleSession : ModeleSession(local, destinataire, socket)
+activate ModeleSession
+ModeleSession -> AccesDB : AccesDB(uuidLocal, uuidDestinataire)
+activate AccesDB
+AccesDB --> ModeleSession : accesdb
+deactivate AccesDB
+ModeleSession --> ControleurSession : modele
+deactivate ModeleSession
+ControleurSession -> ServiceCommunicationTCP : ServiceCommunicationTCP(ctrlS, socket)
+note right of ControleurSession
+ctrlS : ControleurSession
+service : ServiceCommunicationTCP
+end note
 activate ServiceCommunicationTCP
 ServiceCommunicationTCP --> ControleurSession : service
 deactivate ServiceCommunicationTCP
-ControleurSession -> ModeleSession : ModeleSession(utilisateur, historique)
-activate ModeleSession
-ModeleSession --> ControleurSession : modele
-deactivate ModeleSession
 ControleurSession -> ServiceCommunicationTCP : start()
 activate ServiceCommunicationTCP
-ControleurSession -> VueSession : VueSession(controleur, modele)
-deactivate ControleurSession
-activate VueSession
+ref over ControleurSession
+    Récupération de
+        l'historique
+end ref
+end seq
 @enduml

@@ -1,18 +1,20 @@
 @startuml recuperation_historique
 activate ControleurSession
-ControleurSession -> ControleurBDD : getHistorique(utilisateur)
-activate ControleurBDD
-database BaseDeDonneesLocale
-ControleurBDD -> BaseDeDonneesLocale : getHistorique(utilisateur)
-activate BaseDeDonneesLocale
-BaseDeDonneesLocale --> ControleurBDD : historique
-deactivate BaseDeDonneesLocale
-alt historique = null
-    ControleurBDD -> BaseDeDonneesLocale : creationHistorique(utilisateur)
-    activate BaseDeDonneesLocale
-    BaseDeDonneesLocale --> ControleurBDD
-    deactivate BaseDeDonneesLocale
-end
-ControleurBDD --> ControleurSession : historique
-deactivate ControleurBDD
+ControleurSession -> ModeleSession : getDerniersMessages()
+activate ModeleSession
+ModeleSession -> AccesDB : getDerniersMessages()
+activate AccesDB
+database SQLite
+note over SQLite
+result : ResultSet
+historique : List<MessageAffiche>
+end note
+AccesDB -> SQLite : SELECT * FROM ....
+activate SQLite
+SQLite --> AccesDB : result
+deactivate SQLite
+AccesDB --> ModeleSession : historique
+deactivate AccesDB
+ModeleSession --> ControleurSession : historique
+deactivate ModeleSession
 @enduml

@@ -1,33 +1,44 @@
 @startuml fermeture_session
 actor Employe
-activate VueSession
+activate ControleurSession
 activate ServiceCommunicationTCP
 group seq [fermeture locale]
-    Employe -> VueSession : fermeture()
-    VueSession -> ControleurSession : fermeture()
-    activate ControleurSession
-    ControleurSession ->  ServiceCommunicationTCP : envoi(paquet)
-    ServiceCommunicationTCP --> ControleurSession : reception
+    Employe -> ControleurSession : fermetureLocale()
+    ControleurSession ->  TacheEnvoiTCP : TacheEnvoiTCP(sock, msg)
+    activate TacheEnvoiTCP
+    note left of ControleurSession
+    sock : Socket
+    msg : Fin
+    end note
+    ControleurSession -> ModeleSession : fermetureDB
+    deactivate TacheEnvoiTCP
+    activate ModeleSession
+    ModeleSession -> AccesDB : close()
+    activate AccesDB
+    AccesDB --> ModeleSession
+    deactivate AccesDB
+    ModeleSession --> ControleurSession
+    deactivate ModeleSession
+    ControleurSession -> ServiceCommunicationTCP : cancel()
     deactivate ServiceCommunicationTCP
-    ControleurSession --> VueSession
     deactivate ControleurSession
-    VueSession -> VueSession : fermetureVue()
-    VueSession [hidden]-> ServiceCommunicationTCP
-    deactivate VueSession
 end
-VueSession [hidden]-> VueSession
+ControleurSession -[hidden]-> ServiceCommunicationTCP
 activate ServiceCommunicationTCP
-activate VueSession
+activate ControleurSession
 group seq [fermeture distante]
     ServiceCommunicationTCP -> ControleurSession : fermetureDistante()
+    ControleurSession -> ControleurSession : notificationFermeture()
+    Employe -> ControleurSession : ok
+    ControleurSession -> ModeleSession : fermetureDistante()
+    activate ModeleSession
+    ModeleSession -> AccesDB : close()
+    activate AccesDB
+    AccesDB --> ModeleSession
+    deactivate AccesDB
+    ModeleSession --> ControleurSession
+    deactivate ModeleSession
+    ControleurSession -> ServiceCommunicationTCP : cancel()
     deactivate ServiceCommunicationTCP
-    activate ControleurSession
-    ControleurSession -> VueSession : fermetureDistante()
-    deactivate ControleurSession
-    VueSession -> VueSession : notificationFermeture()
-    Employe -> VueSession : ok
-    VueSession -> VueSession : fermetureVue()
-    VueSession [hidden]-> ServiceCommunicationTCP
-    deactivate VueSession
 end
 @enduml

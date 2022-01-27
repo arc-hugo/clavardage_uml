@@ -1,55 +1,76 @@
-@startuml Connexion
+@startuml connexion
 actor Employe
 group seq [connexion locale]
-    Employe -> Principal : main()
-    activate Principal
-    Principal -> VueApplication : start()
-    activate VueApplication 
-    VueApplication -> ControleurUtilisateurs : ControleurUtilisateurs()
+    Employe -> App : main()
+    activate App
+    App -> ControleurUtilisateurs : ControleurUtilisateurs()
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ControleurUDP : ControleurUDP(udp)
-    activate ControleurUDP
-    ControleurUDP -> ServiceReceptionUDP : ServiceReceptionUDP(udp)
-    activate ServiceReceptionUDP
-    ServiceReceptionUDP --> ControleurUDP : serviceUDP
-    deactivate ServiceReceptionUDP
-    ControleurUDP -> ServiceReceptionUDP : start()
-    activate ServiceReceptionUDP
-    ControleurUDP --> ControleurUtilisateurs : udp
-    deactivate ControleurUDP
-    ControleurUtilisateurs -> ControleurTCP : ControleurTCP(tcp)
-    activate ControleurTCP
-    ControleurTCP -> ServiceReceptionTCP : ServiceReceptionTCP(tcp)
-    activate ServiceReceptionTCP
-    ServiceReceptionTCP --> ControleurTCP : serviceTCP
-    deactivate ServiceReceptionTCP
-    ControleurTCP -> ServiceReceptionTCP : start()
-    activate ServiceReceptionTCP
-    ControleurTCP --> ControleurUtilisateurs : tcp
-    deactivate ControleurTCP
     ControleurUtilisateurs -> ModeleUtilisateurs : ModeleUtilisateurs()
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : modele
     deactivate ModeleUtilisateurs
-    ControleurUtilisateurs -> VueUtilisateurs : VueUtilisateurs(controleur, modele)
-    activate VueUtilisateurs
+    ControleurUtilisateurs -> AccesUDP : AccesUDP(ctrlU)
+    activate AccesUDP
+    note right of ControleurUtilisateurs
+    ctrlU : ControleurUtilisateurs
+    udp : AccesUDP
+    serviceUDP : ServiceReceptionUDP
+    end note
+    AccesUDP -> ServiceReceptionUDP : ServiceReceptionUDP(udp)
+    activate ServiceReceptionUDP
+    ServiceReceptionUDP --> AccesUDP : serviceUDP
+    deactivate ServiceReceptionUDP
+    AccesUDP -> ServiceReceptionUDP : start()
+    activate ServiceReceptionUDP
+    AccesUDP --> ControleurUtilisateurs : udp
+    deactivate AccesUDP
+    ControleurUtilisateurs -> AccesTCP : AccesTCP(ctrlU)
+    note right of ControleurUtilisateurs
+    tcp : AccesTCP
+    serviceTCP : ServiceReceptionConnexionTCP
+    end note
+    activate AccesTCP
+    AccesTCP -> ServiceReceptionConnexionTCP : ServiceReceptionConnexionTCP(tcp)
+    activate ServiceReceptionConnexionTCP
+    ServiceReceptionConnexionTCP --> AccesTCP : serviceTCP
+    deactivate ServiceReceptionConnexionTCP
+    AccesTCP -> ServiceReceptionConnexionTCP : start()
+    activate ServiceReceptionConnexionTCP
+    AccesTCP --> ControleurUtilisateurs : tcp
+    deactivate AccesTCP
     ref over ControleurUtilisateurs
-        Saisie de 
+        Saisie de
         pseudo
     end ref
     deactivate ControleurUtilisateurs
 end
 group seq [connexion distante]
-    ServiceReceptionUDP -> ControleurUDP : receptionUtilisateur(identifiant, adresse, pseudo)
-    activate ControleurUDP
-    ref over ControleurUDP
+    ServiceReceptionUDP -> TacheParseUDP : TacheParseUDP(udp, msg, adr)
+    activate TacheParseUDP
+    TacheParseUDP -> AccesUDP : validationUtilisateur(uuid, adr, pseudo)
+    deactivate TacheParseUDP
+    activate AccesUDP
+    ref over AccesUDP
         Validation de
             pseudo
     end ref
-    ControleurUDP -> ModeleUtilisateurs : connexion(utilisateur)
+    note right of ServiceReceptionUDP
+    msg : String
+    pseudo : String
+    adr : InetAdress
+    uuid : UUID
+    broadcast : boolean
+    end note
+    AccesUDP -> ControleurUtilisateurs : receptionUtilisateur(uuid, adr, pseudo)
+    activate ControleurUtilisateurs
+    ControleurUtilisateurs -> ModeleUtilisateurs : connexion(uuid, adr, pseudo)
     activate ModeleUtilisateurs
-    ModeleUtilisateurs --> ControleurUDP
+    ModeleUtilisateurs --> ControleurUtilisateurs
     deactivate ModeleUtilisateurs
-    deactivate ControleurUDP
+    ControleurUtilisateurs --> AccesUDP
+    deactivate ControleurUtilisateurs
+    AccesUDP -> TacheEnvoiUDP : TacheEnvoiUDP(msg, adr, broadcast)
+    deactivate AccesUDP
+    activate TacheEnvoiUDP
 end
 @enduml

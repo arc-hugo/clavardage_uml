@@ -1,73 +1,65 @@
 @startuml validation_pseudo
 actor Employe
 activate ServiceReceptionUDP
-activate VueUtilisateurs
 activate ControleurUtilisateurs
 group seq [envoi pour validation]
     ControleurUtilisateurs -> ModeleUtilisateurs : getIdentifiantLocal()
     activate ModeleUtilisateurs
-    ModeleUtilisateurs --> ControleurUtilisateurs : identifiantLocal
+    ModeleUtilisateurs --> ControleurUtilisateurs : local
     deactivate ModeleUtilisateurs
-    ControleurUtilisateurs -> ControleurUDP : validation(identifiantLocal, nouveauPseudo)
-    activate ControleurUDP
-    ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(paquet)
-    activate ServiceEnvoiUDP
-    ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
-    deactivate ServiceEnvoiUDP
-    ControleurUDP -> ServiceEnvoiUDP : start()
-    activate ServiceEnvoiUDP
-    ServiceEnvoiUDP --> ControleurUDP
-    deactivate ServiceEnvoiUDP
-    ControleurUDP --> ControleurUtilisateurs
-    deactivate ControleurUDP
-    ControleurUtilisateurs --> VueUtilisateurs
-    deactivate ControleurUtilisateurs
+    ControleurUtilisateurs -> AccesUDP : broadcastValidation(idLocal, pseudo)
+    activate AccesUDP
+    AccesUDP -> TacheEnvoiUDP : TacheEnvoiUDP(msg, adr, broadcast)
+    activate TacheEnvoiUDP
+    note over ServiceReceptionUDP
+    local : Utilisateur
+    idLocal : UUID
+    identifiant : UUID
+    msg : String
+    pseudo : String
+    adr : InetAddress
+    broadcast : boolean
+    udp : AccesUDP
+    end note
+    deactivate TacheEnvoiUDP
+    AccesUDP --> ControleurUtilisateurs
+    deactivate AccesUDP
 end
 group seq [reception pseudo choisi invalide]
-    ServiceReceptionUDP -> ControleurUDP : pseudoLocalInvalide()
-    activate ControleurUDP
-    ControleurUDP -> ControleurUtilisateurs : pseudoLocalInvalide()
-    deactivate ControleurUDP
-    activate ControleurUtilisateurs
-    ControleurUtilisateurs -> VueUtilisateurs : pseudoLocalInvalide()
-    deactivate ControleurUtilisateurs
-    VueUtilisateurs -> VueUtilisateurs : notificationPseudoInvalide()
-    Employe -> VueUtilisateurs : ok
-    ref over VueUtilisateurs
+    ServiceReceptionUDP -> TacheParseUDP : TacheParseUDP(udp, msg, adr)
+    activate TacheParseUDP
+    TacheParseUDP -> AccesUDP : pseudoLocalInvalide()
+    deactivate TacheParseUDP
+    activate AccesUDP
+    AccesUDP -> ControleurUtilisateurs : saisiePseudo()
+    deactivate AccesUDP
+    ref over ControleurUtilisateurs
         Saisie de
           pseudo
     end ref
 end
-group seq [changement distant]
-    group seq [utilisateur connecté]
-        ServiceReceptionUDP -> ControleurUDP : receptionPseudo(identifiant, adresse, pseudo)
-        activate ControleurUDP
-    end
-    ControleurUDP -> ControleurUtilisateurs : receptionPseudo(identifiant, adresse, pseudo)
-    deactivate ControleurUDP
-    activate ControleurUtilisateurs
+ServiceReceptionUDP -[hidden]-> ControleurUtilisateurs
+group seq [changement ou connexion distante]
+    activate AccesUDP
+    AccesUDP -> ControleurUtilisateurs : validationDistante(identifiant, pseudo)
+    deactivate AccesUDP
     ControleurUtilisateurs -> ModeleUtilisateurs : getPseudoLocal()
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs : pseudoLocal
     deactivate ModeleUtilisateurs
     alt pseudo != pseudoLocal
-        ControleurUtilisateurs -> ModeleUtilisateurs : changementPseudo(identifiant, pseudo)
+        ControleurUtilisateurs -> ModeleUtilisateurs : setPseudo(identifiant, pseudo)
         activate ModeleUtilisateurs
         ModeleUtilisateurs --> ControleurUtilisateurs
         deactivate ModeleUtilisateurs
     else pseudo == pseudoLocal
-        ControleurUtilisateurs -> ControleurUDP : pseudoInvalide(adresse)
-        activate ControleurUDP
-        ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(paquet)
-        activate ServiceEnvoiUDP
-        ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
-        deactivate ServiceEnvoiUDP
-        ControleurUDP -> ServiceEnvoiUDP : start()
-        activate ServiceEnvoiUDP
-        ServiceEnvoiUDP --> ControleurUDP
-        deactivate ServiceEnvoiUDP
-        ControleurUDP --> ControleurUtilisateurs
-        deactivate ControleurUDP 
+        ControleurUtilisateurs -> AccesUDP : pseudoInvalide(adr)
+        activate AccesUDP
+        AccesUDP -> TacheEnvoiUDP : TacheEnvoiUDP(msg, adr, broadcast)
+        activate TacheEnvoiUDP
+        deactivate TacheEnvoiUDP
+        AccesUDP --> ControleurUtilisateurs
+        deactivate AccesUDP
     end
     deactivate ControleurUtilisateurs
 end

@@ -3,13 +3,16 @@ actor Employe
 activate ControleurUtilisateurs
 ControleurUtilisateurs -> VueSaisiePseudo : saisiePseudo()
 activate VueSaisiePseudo
-Employe -> VueSaisiePseudo : nouveauPseudo
+Employe -> VueSaisiePseudo : pseudo
 VueSaisiePseudo --> ControleurUtilisateurs
 deactivate VueSaisiePseudo
-ControleurUtilisateurs -> ModeleUtilisateurs : setPseudoLocal(nouveauPseudo)
+ControleurUtilisateurs -> ModeleUtilisateurs : setPseudoLocal(pseudo)
 activate ModeleUtilisateurs
 ModeleUtilisateurs --> ControleurUtilisateurs
 deactivate ModeleUtilisateurs
+note over ModeleUtilisateurs
+pseudo : String
+end note
 ref over ControleurUtilisateurs
     Validation d'un
         pseudo

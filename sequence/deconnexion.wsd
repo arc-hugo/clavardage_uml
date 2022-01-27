@@ -1,48 +1,45 @@
-@startuml Deconnexion
+@startuml deconnexion
 actor Employe
-VueApplication [hidden]-> ControleurUtilisateurs
-VueApplication [hidden]-> ControleurUDP
-VueApplication [hidden]-> ServiceEnvoiUDP
+ControleurUtilisateurs [hidden]-> AccesUDP
+ControleurUtilisateurs [hidden]-> TacheEnvoiUDP
 group seq [deconnexion locale]
-    VueApplication [hidden]-> ServiceReceptionUDP
-    activate VueApplication
-    activate ServiceReceptionUDP
-    Employe -> VueApplication : deconnexion()
-    VueApplication -> ControleurUtilisateurs : deconnexion()
+    ControleurUtilisateurs [hidden]-> ServiceReceptionUDP
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ControleurUDP : deconnexion()
-    activate ControleurUDP
-    ControleurUDP -> ServiceEnvoiUDP : ServiceEnvoiUDP(udp, paquet)
-    activate ServiceEnvoiUDP
-    ServiceEnvoiUDP --> ControleurUDP : serviceEnvoi
-    deactivate ServiceEnvoiUDP
-    ControleurUDP -> ServiceEnvoiUDP : start()
-    activate ServiceEnvoiUDP
-    ServiceEnvoiUDP --> ControleurUDP
-    deactivate ServiceEnvoiUDP
-    ControleurUDP --> ControleurUtilisateurs
-    deactivate ControleurUDP
-    ControleurUtilisateurs --> VueApplication
-    deactivate ControleurUtilisateurs
-    VueApplication -> VueApplication : fermeture()
-    VueApplication [hidden]-> VueApplication
+    activate ServiceReceptionUDP
+    Employe -> ControleurUtilisateurs : deconnexion()
+    ControleurUtilisateurs -> AccesUDP : broadcastDeconnexion(utilisateur)
+    note left of ControleurUtilisateurs
+    utilisateur : Utilisateur
+    msg : String
+    adr : InetAdress
+    broadcast : boolean
+    end note
+    activate AccesUDP
+    AccesUDP -> TacheEnvoiUDP : TacheEnvoiUDP(msg, adr, broadcast)
+    activate TacheEnvoiUDP
+    AccesUDP --> ControleurUtilisateurs
+    deactivate AccesUDP
+    ControleurUtilisateurs -> ControleurUtilisateurs : fermeture()
     deactivate ServiceReceptionUDP
-    deactivate VueApplication
+    deactivate TacheEnvoiUDP
+    deactivate ControleurUtilisateurs
 end
 group seq [deconnexion distante]
-    VueApplication [hidden]-> ControleurUtilisateurs
-    activate VueApplication
+    ServiceReceptionUDP -> AccesUDP : deconnexionDistante(identifiant)
     activate ServiceReceptionUDP
-    ServiceReceptionUDP -> ControleurUDP : deconnexionDistante(identifiant)
-    activate ControleurUDP
-    ControleurUDP -> ControleurUtilisateurs : deconnexionDistante(identifiant)
+    activate AccesUDP
+    AccesUDP -> ControleurUtilisateurs : deconnexionDistante(identifiant)
     activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ModeleUtilisateurs : deconnexion(identifiant)
+    ControleurUtilisateurs -> ModeleUtilisateurs : setEtat(identifiant, etat)
+    note left of ControleurUtilisateurs
+    identifiant : UUID
+    etat : EtatUtilisateur
+    end note
     activate ModeleUtilisateurs
     ModeleUtilisateurs --> ControleurUtilisateurs
     deactivate ModeleUtilisateurs
-    ControleurUtilisateurs --> ControleurUDP
+    ControleurUtilisateurs --> AccesUDP
     deactivate ControleurUtilisateurs
-    deactivate ControleurUDP
+    deactivate AccesUDP
 end
 @enduml

@@ -1,63 +1,101 @@
 @startuml lancement_session
 actor Employe
-activate VueUtilisateurs
-activate ServiceReceptionTCP
+activate ControleurUtilisateurs
+activate ServiceReceptionConnexionTCP
 group seq [lancement local]
-    Employe -> VueUtilisateurs : lancementSession(identifiant)
-    VueUtilisateurs -> ControleurUtilisateurs : lancementSession(identifiant)
-    activate ControleurUtilisateurs
-    ControleurUtilisateurs -> ModeleUtilisateurs : estActif(identifiant)
+    Employe -> ControleurUtilisateurs : lancementSession(destinataire)
+    ControleurUtilisateurs -> ModeleUtilisateurs : getEtat(destinataire)
     activate ModeleUtilisateurs
-    ModeleUtilisateurs --> ControleurUtilisateurs : actif
+    ModeleUtilisateurs --> ControleurUtilisateurs : etat
     deactivate ModeleUtilisateurs
-    alt actif = true
-        ControleurUtilisateurs -> ControleurTCP : demandeConnexion(destinataire)
-        activate ControleurTCP
-        ControleurTCP -> ServiceConnexionTCP : ServiceConnexionTCP(tcp, utilisateur)
-        activate ServiceConnexionTCP
-        ServiceConnexionTCP --> ControleurTCP : serviceConnexion
-        deactivate ServiceConnexionTCP
-        ControleurTCP -> ServiceConnexionTCP : start()
-        activate ServiceConnexionTCP
-        ServiceConnexionTCP --> ControleurTCP : socket
-        deactivate ServiceConnexionTCP
-        ControleurTCP --> ControleurUtilisateurs : connexion, socket
-        deactivate ControleurTCP
-        alt connexion = true
+    alt etat = CONNECTE
+        ControleurUtilisateurs -> AccesTCP : demandeConnexion(destinataire)
+        activate AccesTCP
+        AccesTCP -> TacheConnexionTCP : TacheConnexionTCP(tcp, destinataire)
+        note over Employe
+        destinataire : Utilisataire
+        utilisateur : Utilisataire
+        etat : EtatUtilisateur
+        tcp : AccesTCP
+        sock : Socket
+        adr : InetAdress
+        end note
+        deactivate AccesTCP
+        activate TacheConnexionTCP
+        alt connexion acceptee
+            TacheConnexionTCP -> AccesTCP : connexionAccepte(sock)
+            activate AccesTCP
+            AccesTCP -> ControleurUtilisateurs : lancementAccepte(sock)
+            ControleurUtilisateurs -> ModeleUtilisateurs : getUtilisateurWithAdresse(adr)
+            activate ModeleUtilisateurs
+            ModeleUtilisateurs --> ControleurUtilisateurs : utilisateur
+            deactivate ModeleUtilisateurs
             ref over ControleurUtilisateurs
                 Création de
                     session
             end ref
-        else connexion = false
+            ControleurUtilisateurs --> AccesTCP
+            AccesTCP --> TacheConnexionTCP
+            deactivate AccesTCP
+            deactivate TacheConnexionTCP
+        else connexion refusee
+            TacheConnexionTCP -[hidden]-> ControleurUtilisateurs
+            activate TacheConnexionTCP
+            TacheConnexionTCP -> AccesTCP : connexionRefuse(sock)
+            activate AccesTCP
+            AccesTCP -> ControleurUtilisateurs : lancementRefuse(adr)
+            ControleurUtilisateurs -> ModeleUtilisateurs : getUtilisateurWithAdresse(adr)
+            activate ModeleUtilisateurs
+            ModeleUtilisateurs --> ControleurUtilisateurs : utilisateur
+            deactivate ModeleUtilisateurs
             ControleurUtilisateurs -> ControleurUtilisateurs : messageConnexionRefuse(utilisateur)
-            ControleurUtilisateurs --> VueUtilisateurs
+            ControleurUtilisateurs --> AccesTCP
+            AccesTCP --> TacheConnexionTCP
+            deactivate AccesTCP
+            deactivate TacheConnexionTCP
         end
-    else actif = false
-        ControleurUtilisateurs -> ControleurUtilisateurs : messageUtilisateurInactif(utilisateur)
-        ControleurUtilisateurs --> VueUtilisateurs
-        deactivate ControleurUtilisateurs
+    else actif = DECONNECTE
+        ControleurUtilisateurs -> ControleurUtilisateurs : messageUtilisateurInactif(destinataire)
     end
 end
 group seq [lancement distante]
-    ServiceReceptionTCP -> ControleurTCP : receptionConnexion(socket)
-    activate ControleurTCP
-    ControleurTCP -> ModeleUtilisateurs : getUtilisateurWithAdresse(adresse)
+    ServiceReceptionConnexionTCP -> AccesTCP : receptionConnexion(sock)
+    activate AccesTCP
+    AccesTCP -> ControleurUtilisateurs : demandeSession(
+    ControleurUtilisateurs -> ModeleUtilisateurs : getUtilisateurWithAdresse(adr)
     activate ModeleUtilisateurs
-    ModeleUtilisateurs --> ControleurTCP : utilisateur
+    ModeleUtilisateurs --> ControleurUtilisateurs : utilisateur
     deactivate ModeleUtilisateurs
-    ControleurTCP -> ControleurUtilisateurs : demandeSession(utilisateur, socket)
-    activate ControleurUtilisateurs
-    ControleurUtilisateurs -> VueUtilisateurs : notificationSession(utilisateur)
-    Employe -> VueUtilisateurs : accepter
-    VueUtilisateurs --> ControleurUtilisateurs : accepter
+    ControleurUtilisateurs -> ControleurUtilisateurs : accepterConnexion(utilisateur)
+    Employe -> ControleurUtilisateurs : accepter
+    note over Employe
+    accepter : boolean
+    ok : Ok
+    fin : Fin
+    end note
     alt accepter = true
         ref over ControleurUtilisateurs
             Création de
                 session
         end ref
+        ControleurUtilisateurs --> AccesTCP : accepte
+        AccesTCP -> Ok : Ok(local)
+        activate Ok
+        Ok --> AccesTCP : ok
+        deactivate Ok
+        AccesTCP -> Ok : envoi(sock)
+        activate Ok
+        deactivate Ok
+    else
+        ControleurUtilisateurs --> AccesTCP : accepte
+        AccesTCP -> Fin : Fin(local)
+        activate Fin
+        Fin --> AccesTCP : Fin
+        deactivate Fin
+        AccesTCP -> Fin : envoi(sock)
+        activate Fin
+        deactivate Fin
     end
-    ControleurUtilisateurs --> ControleurTCP
-    deactivate ControleurUtilisateurs
-    deactivate ControleurTCP
+    deactivate AccesTCP
 end
 @enduml

@@ -1,33 +1,43 @@
 @startuml envoi_message
 actor Employe
-activate VueSession
+activate ControleurSession
 activate ServiceCommunicationTCP
 group seq [envoi d'un messsage textuel]
-    Employe -> VueSession : ecrireTexte(texte)
+    Employe -> ControleurSession : ecrireTexte(texte)
 end
 group seq [envoi d'un fichier]
-    Employe -> VueSession : selectionFichier(fichier)
+    Employe -> ControleurSession : selectionFichier(fichier)
 end
-VueSession -> ControleurSession : envoiMessage(msg)
 activate ControleurSession
-ControleurSession -> ServiceCommunicationTCP : envoi(paquet)
-ServiceCommunicationTCP --> ControleurSession : reception
-alt reception = true
-    ControleurSession [hidden]-> ControleurSession
-    ref over ControleurSession
+ControleurSession -> ModeleSession : ajoutEnvoi(msg)
+activate ModeleSession
+ModeleSession --> ControleurSession
+deactivate ModeleSession
+ControleurSession -> TacheEnvoiTCP : TacheEnvoiTCP(sock, msg)
+note left of TacheEnvoiTCP
+texte : String
+fichier : File
+msg : MessageAffiche
+sock : Socket
+end note
+activate TacheEnvoiTCP
+deactivate TacheEnvoiTCP
+alt ok
+    ServiceCommunicationTCP -> ControleurSession : messageok()
+    ControleurSession -> ModeleSession : envoiTermine()
+    ref over ModeleSession
         Enregistrement dans
-            l'historique 
+            l'historique
     end ref
-    ControleurSession -> ModeleSession : ajoutMessage(msg)
     activate ModeleSession
-    ModeleSession --> ControleurSession
+    ModeleSession --> ControleurSession : msg
     deactivate ModeleSession
-else reception = false
-    ControleurSession -> ModeleSession : ajoutErreurMessage(msg)
+else erreur
+    ServiceCommunicationTCP -> ControleurSession : erreurEnvoi()
+    ControleurSession -> ModeleSession : erreurEnvoi()
     activate ModeleSession
-    ModeleSession --> ControleurSession
+    ModeleSession --> ControleurSession : msg
     deactivate ModeleSession
 end
-ControleurSession --> VueSession
 deactivate ControleurSession
 @enduml
