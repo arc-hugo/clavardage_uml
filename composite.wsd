@@ -1,4 +1,4 @@
-@startuml composite
+@startuml
 sprite $clavardage [16x16/16] {
 FFFFFFFFFFFFFFFF
 FFF000000000FFFF
@@ -19,11 +19,7 @@ FFFFFFFFFFFFFFFF
 }
 
 rectangle "Application de clavardage" <<$clavardage>> {
-    component VueApplication
-    component VueUtilisateurs
-    component VueSession
-    component VuePseudo
-    
+  
     component ControleurUtilisateurs
     component ControleurSession
     component ControleurUDP
@@ -36,65 +32,39 @@ rectangle "Application de clavardage" <<$clavardage>> {
     component ModeleSession
     component ModeleUtilisateurs
 
-    component Executeur
-    component ExecuteurDB
-    component ExecuteurFond
-    component ExecuteurSession
-    component ExecuteurReseau
-
     component ServiceReceptionUDP
     component ServiceReceptionConnexionTCP
     component ServiceReceptionTCP
 
-    VueApplication --> VueUtilisateurs
-    VueApplication --> VueSession
-
-    VueUtilisateurs <--> ControleurUtilisateurs
-    VuePseudo <--> ControleurUtilisateurs
-    VueSession <--> ControleurSession
     ControleurUtilisateurs --> AccessTCP
     ControleurUtilisateurs --> AccessUDP
-    ControleurUtilisateurs --> Executeur
     ControleurUtilisateurs <--> ModeleUtilisateurs
 
     ModeleSession <--> AccessDB
-    ModeleSession --> ExecuteurDB
 
     ControleurSession <--> ModeleSession
     ControleurSession <--> ServiceReceptionTCP
-
-    Executeur --> ExecuteurDB
-    Executeur --> ExecuteurFond
-    Executeur --> ExecuteurReseau
-    Executeur --> ExecuteurSession
-
-    ExecuteurReseau --> AccessTCP
-    ExecuteurReseau --> AccessUDP
-    ExecuteurReseau --> ServiceReceptionConnexionTCP
-    ExecuteurReseau --> ServiceReceptionUDP
-
-    ExecuteurSession <--> ServiceReceptionTCP
 
     AccessTCP <--> ServiceReceptionConnexionTCP
     AccessUDP <--> ServiceReceptionUDP
 
     ControleurUDP <-- ServiceReceptionUDP
-    ControleurUDP --> Executeur
     ControleurTCP <-- ServiceReceptionTCP
-    ControleurTCP --> Executeur
+
+
 }
 cloud "Réseau local" as net
 database "Base de données" as bdd
 actor "Employé"as emp
-ExecuteurDB --> bdd
+
 AccessDB --> bdd
 
 ServiceReceptionTCP <-- net
 ServiceReceptionUDP <-- net
 ServiceReceptionConnexionTCP <--> net
 
-VueApplication <-u- emp
-VuePseudo <-u- emp
-VueSession <-u-> emp
-VueUtilisateurs <-u-> emp
+ControleurUtilisateurs <-u- emp
+ControleurUDP <-u- emp
+ControleurSession <-u-> emp
+ControleurTCP <-u-> emp
 @enduml
