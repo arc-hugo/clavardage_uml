@@ -28,13 +28,23 @@ rectangle "Application de clavardage" <<$clavardage>> {
     component ControleurSession
     component ControleurUDP
     component ControleurTCP
-    component ControleurBDD
+
+    component AccessDB
+    component AccessTCP
+    component AccessUDP
+
+    component ModeleSession
+    component ModeleUtilisateurs
+
+    component Executeur
+    component ExecuteurDB
+    component ExecuteurFond
+    component ExecuteurSession
+    component ExecuteurReseau
 
     component ServiceReceptionUDP
+    component ServiceReceptionConnexionTCP
     component ServiceReceptionTCP
-    component ServiceCommunicationTCP
-    component ServiceEnvoiUDP
-    component ServiceConnexionTCP
 
     VueApplication --> VueUtilisateurs
     VueApplication --> VueSession
@@ -42,33 +52,49 @@ rectangle "Application de clavardage" <<$clavardage>> {
     VueUtilisateurs <--> ControleurUtilisateurs
     VuePseudo <--> ControleurUtilisateurs
     VueSession <--> ControleurSession
+    ControleurUtilisateurs --> AccessTCP
+    ControleurUtilisateurs --> AccessUDP
+    ControleurUtilisateurs --> Executeur
+    ControleurUtilisateurs <--> ModeleUtilisateurs
 
-    ControleurUtilisateurs <--> ControleurTCP
-    ControleurUtilisateurs <--> ControleurUDP
+    ModeleSession <--> AccessDB
+    ModeleSession --> ExecuteurDB
 
-    ControleurSession --> ControleurBDD
-    ControleurSession <--> ServiceCommunicationTCP
+    ControleurSession <--> ModeleSession
+    ControleurSession <--> ServiceReceptionTCP
+
+    Executeur --> ExecuteurDB
+    Executeur --> ExecuteurFond
+    Executeur --> ExecuteurReseau
+    Executeur --> ExecuteurSession
+
+    ExecuteurReseau --> AccessTCP
+    ExecuteurReseau --> AccessUDP
+    ExecuteurReseau --> ServiceReceptionConnexionTCP
+    ExecuteurReseau --> ServiceReceptionUDP
+
+    ExecuteurSession <--> ServiceReceptionTCP
+
+    AccessTCP <--> ServiceReceptionConnexionTCP
+    AccessUDP <--> ServiceReceptionUDP
 
     ControleurUDP <-- ServiceReceptionUDP
-    ControleurUDP --> ServiceEnvoiUDP
+    ControleurUDP --> Executeur
     ControleurTCP <-- ServiceReceptionTCP
-    ControleurTCP --> ServiceConnexionTCP
+    ControleurTCP --> Executeur
 }
 cloud "Réseau local" as net
 database "Base de données" as bdd
 actor "Employé"as emp
-
-ControleurBDD --> bdd
+ExecuteurDB --> bdd
+AccessDB --> bdd
 
 ServiceReceptionTCP <-- net
 ServiceReceptionUDP <-- net
-ServiceEnvoiUDP --> net
-ServiceConnexionTCP --> net
-ServiceCommunicationTCP <--> net
+ServiceReceptionConnexionTCP <--> net
 
 VueApplication <-u- emp
 VuePseudo <-u- emp
 VueSession <-u-> emp
 VueUtilisateurs <-u-> emp
-
 @enduml
