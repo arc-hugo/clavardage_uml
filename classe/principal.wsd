@@ -1,5 +1,11 @@
 @startuml principal
-class Principal {
-    + int main()
+class Main [[java:gei.barralberry.clavardage.Main]] {
+	+{static} main(args: String[]): void
 }
+class App [[java:gei.barralberry.clavardage.App]] {
+	-{static} scene: Scene
+	+start(stage: Stage): void
+	+{static} main(args: String[]): void
+}
+Application <|-- App
 @enduml

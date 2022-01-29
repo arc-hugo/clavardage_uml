@@ -1,71 +1,72 @@
 @startuml modeles
-package "Modeles" {    
-    class ModeleUtilisateurs {        
-        - Utilisateur utilisateurLocal        
-        - List<Utilisateur> utilisateurs        
-        + Utilisateur getUtilisateurLocal()
-        + String getPseudoLocal()
-        + void connexion(Utilisateur utilisateur)
-        + void deconnexion(UUID identifiant)
-        + void changementPseudo(UUID identifiant, String pseudo)
-        + boolean estActif(UUID identifiant)
-        + Utilisateur getUtilisateurWithAdresse(String adresse)
-    }    
-    class ModeleSession {        
-        - Socket socket        
-        - Utilisateur destinataire        
-        - List<Message> messages
-        + void ajoutMessage(Message message)
-        + void ajoutMessageRecu(Message message)
-        + void ajoutErreurMessage(Message message)
-    }    
-    class Utilisateur {        
-        - UUID identifiant
-        - String adresse
-        - String pseudo        
-        - boolean actif        
-        + String getPseudo()        
-        + void setPseudo(String pseudo)        
-        + UUID getIdentifiant()        
-        + boolean isActif()        
-        + void setActif(boolean actif)    
-    }    
-    abstract class Message {        
-        - Date date        
-        - UUID auteur        
-        + Date getDate()        
-        + UUID getAuteurId()        
-        + Object getContent()    
-    }    
-    class Texte {        
-        - String texte        
-        + String getContent()    
-    }   
-    class Fichier {        
-        - File fichier        
-        + File getContent()    
-    }    
-    class Image {        
-        - Image image        
-        + Image getContent()    
-    }    
-    class Notification {        
-        - int Type        
-        + int getType()   
-    }    
-    abstract class Requete {     }
-    class RequeteUni    
-    class RequeteBroadcast     
-    
-    Texte -up-|> Message    
-    Image -up-|> Message    
-    Fichier -up-|> Message    
-    Notification -up-|> Texte     
-    
-    RequeteUni -up-|> Requete    
-    RequeteBroadcast -up-|> Requete     
-    
-    ModeleSession "1" -down-> "*" Message : contient >     
-    ModeleUtilisateurs "1" --> "*" Utilisateur : liste > 
+package Modeles {
+   package Session {
+      class ModeleSession [[java:gei.barralberry.clavardage.modeles.session.ModeleSession]] {
+	    -connecte: BooleanProperty
+	    -sock: Socket
+	    +ModeleSession(local: Utilisateur, destinataire: Utilisateur)
+	    +ModeleSession(local: Utilisateur, destinataire: Utilisateur, sock: Socket)
+	    +getIdentifiantLocal(): UUID
+	    +getSocket(): Socket
+	    +getConnecteProperty(): BooleanProperty
+	    +estConnecte(): boolean
+	    +ajoutEnvoi(msg: MessageAffiche): void
+	    +enregistrerReception(msg: MessageAffiche): void
+	    +fermetureDB(): void
+	    +fermetureDistante(): void
+      }
+   }
+   package Utilisateurs {
+      class ModeleUtilisateurs [[java:gei.barralberry.clavardage.modeles.utilisateurs.ModeleUtilisateurs]] {
+	    +ModeleUtilisateurs()
+	    +getPseudoLocal(): String
+	    +setPseudoLocal(pseudo: String): void
+	    -getIndexById(id: UUID): int
+	    +connexion(identifiant: UUID, adresse: InetAddress, pseudo: String): void
+	    +getPseudo(identifiant: UUID): String
+	    +setPseudo(identifiant: UUID, pseudo: String): void
+	    +getEtat(identifiant: UUID): EtatUtilisateur
+	    +setEtat(identifiant: UUID, etat: EtatUtilisateur): void
+	    -getIndexByAdresse(inetAddress: InetAddress): int
+	    +getUtilisateurWithAdresse(inetAddress: InetAddress): Utilisateur
+	    +getUtilisateurWithUUID(identifiant: UUID): Utilisateur
+      }
+      enum EtatUtilisateur [[java:gei.barralberry.clavardage.modeles.utilisateurs.EtatUtilisateur]] {
+	CONNECTE
+	DECONNECTE
+	EN_SESSION
+	EN_ATTENTE
+      }
+      class Utilisateur [[java:gei.barralberry.clavardage.modeles.utilisateurs.Utilisateur]] {
+	-uuid: UUID
+	-adresse: InetAddress
+	-pseudo: StringProperty
+	+Utilisateur(uuid: UUID, adresse: InetAddress, pseudo: String, etat: EtatUtilisateur)
+	+Utilisateur(adresse: InetAddress, pseudo: String, etat: EtatUtilisateur)
+	+getPseudo(): String
+	+getPseudoPropery(): StringProperty
+	+setPseudo(new_pseudo: String): void
+	+getIdentifiant(): UUID
+	+setEtat(etat: EtatUtilisateur): void
+	+getAdresse(): InetAddress
+	+{static} extractor(): Callback<Utilisateur,Observable[]>
+	+toString(): String
+      }
+   }
 }
+ModeleUtilisateurs --> "1" Utilisateur : utilisateurLocal
+ModeleUtilisateurs --> "*" Utilisateur : utilisateurs
+ModeleUtilisateurs --> "1" Utilisateur : getUtilisateurLocal()
+ModeleUtilisateurs --> "*" Utilisateur : getUtilisateurs()
+ModeleSession --> "1" Utilisateur : utilisateurLocal
+ModeleSession --> "1" Utilisateur : destinataire
+ModeleSession --> "*" MessageAffiche : queueEnvoi
+ModeleSession --> "1" AccesDB : accesDB
+ModeleSession --> "1" ExecuteurDB : ecriture
+ModeleSession --> "1" Utilisateur : getDestinataire()
+ModeleSession --> "*" MessageAffiche : getDerniersMessages()
+ModeleSession --> "1" MessageAffiche : envoiTermine()
+ModeleSession --> "1" MessageAffiche : erreurEnvoi()
+Utilisateur --> "ObjectProperty<EtatUtilisateur>" EtatUtilisateur : etat
+Utilisateur --> "1" EtatUtilisateur : getEtat()
 @enduml

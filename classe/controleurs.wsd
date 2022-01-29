@@ -1,59 +1,95 @@
 @startuml controleurs
-package "Controleurs" {    
-    class ControleurUtilisateurs {        
-        - ModeleUtilisateurs modele
-        - ControleurUDP udp
-        - ControleurTCP tcp
-        + void sasiePseudo()
-        + void lancementSession(UUID identifiant)
-        + void demandeSession(Utilisateur utilisateur)
-        + void deconnexion()
-        # void receptionPseudo(UUID identifiant, String adresse, String pseudo)
-        # void deconnexionDistante(UUID identifiant)
-        # void pseudoLocalInvalide()
-        - void fermeture()
-        - void validation(String pseudo)
-        - void messageConnexionRefuse(Utilisateur utilisateur)        
-        - void messageUtilisateurInactif(Utilisateur utilisateur)    
-    }    
-    class ControleurSession {        
-        - ModeleSession modele
-        - ServiceCommunicationTCP service
-        - ControleurBDD bdd
-        + void fermeture()
-        + void fermetureDistante()
-        + void envoiMessage(Message message)
-        + void receptionMessage(Message message)
-        + void fermeture()
-        + void fermetureDistante()
-        - void erreurReception(Message message)    
-    }    
-    class ControleurUDP {
-        + void deconnexion()
-        + void pseudoLocalInvalide()
-        + void deconnexionDistante(UUID identifiant)
-        + void receptionUtilisateur(UUID identifiant, String adresse, String pseudo)
-        + void receptionPseudo(UUID identifiant, String adresse, String pseudo)
-        # void validation(UUID identifiantLocal, String nouveauPseudo)
-        # void pseudoInvalide(String adresse)
-    }    
-    class ControleurTCP {        
-        + Socket demandeConnexion(Utilisateur destinataire)
-        + void receptionConnexion(Socket socket)
-    }
-    class ControleurBDD {
-        - {static} ControleurBDD instance
-        + {static} ControleurBDD instance()
-        + List<Message> getHistorique(Utilisateur utilisateur)
-        + void enregistrementEnvoi(Message message, Utilisateur utilisateur)        
-        + void enregistrementReception(Message message, Utilisateur utilisateur)
-        - void creationHistorique(Utilisateur utilisateur)
-    }
-
-    ControleurUtilisateurs "1" -- "1" ControleurUDP
-    ControleurUtilisateurs "1" -- "1" ControleurTCP
-    ControleurUtilisateurs "1" -- "*" ControleurSession : crée >
-
-    ControleurSession "*" -- "1" ControleurBDD
+interface Initializable {
 }
+package Controleurs {
+   class ControleurPseudo [[java:gei.barralberry.clavardage.controleurs.ControleurPseudo]] {
+	 -pseudo: TextField
+	 -validate_button: Button
+	 -buttonbar: ButtonBar
+	 -pref: Preferences
+	 -txt: String
+	 -x: int
+	 -y: int
+	 -{static} actif: boolean
+	 +ControleurPseudo()
+	 +getTxt(): String
+	 +{static} estActif(): boolean
+	 -new_pseudo(): void
+	 -ferme(): void
+	 -diminue(): void
+	 -change(): void
+	 -dragged(event: MouseEvent): void
+	 -pressed(event: MouseEvent): void
+	 +initialize(location: URL, resources: ResourceBundle): void
+   }
+   class ControleurSession [[java:gei.barralberry.clavardage.controleurs.ControleurSession]] {
+         -{static} CSS_ENVOI: String
+	 -{static} CSS_RECEPTION: String
+	 -{static} CSS_ERREUR: String
+	 -envoyer: Button
+	 -fichier: Button
+	 -texte: TextField
+	 -messages: VBox
+	 -scroll: ScrollPane
+	 -dossierSession: File
+	 +ControleurSession(local: Utilisateur, destinataire: Utilisateur)
+	 +ControleurSession(local: Utilisateur, destinataire: Utilisateur, sock: Socket)
+	 +initialize(location: URL, resources: ResourceBundle): void
+	 -envoiTexte(): void
+	 -envoiFichier(fichier: File): void
+	 -fermeture(): void
+	 -envoiMessage(msg: MessageAffiche): void
+	 +fermetureLocale(): void
+	 +confirmerFermeture(): void
+	 +fermetureDistante(): void
+	 +receptionMessage(msg: MessageAffiche): void
+	 +getIdentifiantLocal(): UUID
+	 +getDossierSession(): File
+	 +envoiRecu(): void
+	 +erreurEnvoi(): void
+   }
+   class ControleurUtilisateurs [[java:gei.barralberry.clavardage.controleurs.ControleurUtilisateurs]] {
+	 -tabs: TabPane
+	 -deconnexion: MenuItem
+	 -changerPseudo: MenuItem
+	 -buttonbar: ButtonBar
+	 -name: MenuButton
+	 -vb: VBox
+	 -pane: BorderPane
+	 -x: int
+	 -y: int
+	 +ControleurUtilisateurs()
+	 +getIdentifiantLocal(): UUID
+	 +getPseudoLocal(): String
+	 +saisiePseudo(): void
+	 -creationSession(util: Utilisateur, sock: Socket): void
+	 -afficherHistorique(util: Utilisateur): void
+	 +lancementSession(destinataire: Utilisateur): void
+	 +lancementAccepte(sock: Socket): boolean
+	 +lancementRefuse(adresse: InetAddress): void
+	 +deconnexion(): void
+	 +demandeSession(sock: Socket): boolean
+	 +receptionUtilisateur(identifiant: UUID, adresse: InetAddress, pseudo: String): void
+	 +deconnexionDistante(identifiant: UUID): void
+	 +validationDistante(uuid: UUID, pseudo: String): boolean
+	 -chercherSession(identifiant: UUID): Tab
+	 -ferme(): void
+	 -diminue(): void
+	 -change(): void
+	 -dragged1(event: MouseEvent): void
+	 -pressed1(event: MouseEvent): void
+	 +initialize(location: URL, resources: ResourceBundle): void
+   }
+}
+ControleurUtilisateurs ..|> Initializable
+ControleurSession ..|> Initializable
+ControleurPseudo ..|> Initializable
+ControleurUtilisateurs --> "ListView<Utilisateur>" Utilisateur : list
+ControleurUtilisateurs --> "1" ModeleUtilisateurs : modele
+ControleurUtilisateurs --> "1" AccesUDP : udp
+ControleurUtilisateurs --> "1" AccesTCP : tcp
+ControleurSession --> "1" ModeleSession : modele
+ControleurSession --> "1" ServiceReceptionTCP : reception
+ControleurSession --> "1" ExecuteurSession : executeur
+ControleurSession --> "1" Utilisateur : getDestinataire()
 @enduml

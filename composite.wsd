@@ -22,8 +22,7 @@ rectangle "Application de clavardage" <<$clavardage>> {
   
     component ControleurUtilisateurs
     component ControleurSession
-    component ControleurUDP
-    component ControleurTCP
+    component ControleurPseudo
 
     component AccessDB
     component AccessTCP
@@ -38,6 +37,8 @@ rectangle "Application de clavardage" <<$clavardage>> {
 
     ControleurUtilisateurs --> AccessTCP
     ControleurUtilisateurs --> AccessUDP
+    ControleurUtilisateurs <--> ControleurPseudo
+    ControleurUtilisateurs <--> ControleurSession
     ControleurUtilisateurs <--> ModeleUtilisateurs
 
     ModeleSession <--> AccessDB
@@ -47,14 +48,9 @@ rectangle "Application de clavardage" <<$clavardage>> {
 
     AccessTCP <--> ServiceReceptionConnexionTCP
     AccessUDP <--> ServiceReceptionUDP
-
-    ControleurUDP <-- ServiceReceptionUDP
-    ControleurTCP <-- ServiceReceptionTCP
-
-
 }
 cloud "Réseau local" as net
-database "Base de données" as bdd
+database "Base de données SQLite" as bdd
 actor "Employé"as emp
 
 AccessDB --> bdd
@@ -63,8 +59,7 @@ ServiceReceptionTCP <-- net
 ServiceReceptionUDP <-- net
 ServiceReceptionConnexionTCP <--> net
 
-ControleurUtilisateurs <-u- emp
-ControleurUDP <-u- emp
+ControleurUtilisateurs <-u-> emp
 ControleurSession <-u-> emp
-ControleurTCP <-u-> emp
+ControleurPseudo <-u-> emp
 @enduml

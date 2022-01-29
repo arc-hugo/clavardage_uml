@@ -1,11 +1,11 @@
 @startuml saisie_pseudo
 actor Employe
 activate ControleurUtilisateurs
-ControleurUtilisateurs -> VueSaisiePseudo : saisiePseudo()
-activate VueSaisiePseudo
-Employe -> VueSaisiePseudo : pseudo
-VueSaisiePseudo --> ControleurUtilisateurs
-deactivate VueSaisiePseudo
+ControleurUtilisateurs -> ControleurSaisiePseudo : saisiePseudo()
+activate ControleurSaisiePseudo
+Employe -> ControleurSaisiePseudo : pseudo
+ControleurSaisiePseudo --> ControleurUtilisateurs
+deactivate ControleurSaisiePseudo
 ControleurUtilisateurs -> ModeleUtilisateurs : setPseudoLocal(pseudo)
 activate ModeleUtilisateurs
 ModeleUtilisateurs --> ControleurUtilisateurs

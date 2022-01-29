@@ -6,11 +6,11 @@ table(Historique) {
     {static} id : UUID
 }
 table(Message) {
-    {static} id: int
-    contenu : string
-    date : date
+    {static} id: integer
+    contenu : text
+    date : timestamp
     fichier : boolean
-    proprietaire : boolean
+    recu : boolean
 }
 Historique "1" -- "*" Message
 @enduml

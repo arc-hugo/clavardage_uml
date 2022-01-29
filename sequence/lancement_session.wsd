@@ -78,22 +78,24 @@ group seq [lancement distante]
             Création de
                 session
         end ref
-        ControleurUtilisateurs --> AccesTCP : accepte
+        ControleurUtilisateurs --> AccesTCP : accepter
         AccesTCP -> Ok : Ok(local)
         activate Ok
         Ok --> AccesTCP : ok
         deactivate Ok
         AccesTCP -> Ok : envoi(sock)
         activate Ok
+        Ok --> AccesTCP
         deactivate Ok
     else
-        ControleurUtilisateurs --> AccesTCP : accepte
+        ControleurUtilisateurs --> AccesTCP : accepter
         AccesTCP -> Fin : Fin(local)
         activate Fin
         Fin --> AccesTCP : Fin
         deactivate Fin
         AccesTCP -> Fin : envoi(sock)
         activate Fin
+        Fin --> AccesTCP
         deactivate Fin
     end
     deactivate AccesTCP

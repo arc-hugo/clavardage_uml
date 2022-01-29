@@ -2,6 +2,7 @@
 activate ControleurSession
 note left of ControleurSession
 msg : MessageAffiche
+sock : Socket
 end note
 activate ServiceCommunicationTCP
 ServiceCommunicationTCP -> ControleurSession : receptionMessage(msg)
@@ -13,5 +14,6 @@ ref over ModeleSession
 end ref
 ModeleSession --> ControleurSession
 deactivate ModeleSession
-deactivate ControleurSession
+ServiceCommunicationTCP -> MessageOK : MessageOK(sock)
+activate MessageOK
 @enduml
